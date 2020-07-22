@@ -4,7 +4,6 @@ from Crypto.Util import Padding
 from Crypto.Random import get_random_bytes
 
 class session_crypto:
-    @classmethod
     def __init__(self, key):
         self.key = key
 
@@ -18,18 +17,19 @@ class session_crypto:
         return encMsg, hashed_msg, IV
 
 
-    def decrypt(self, msg, IV):
+    def decrypt(self, msg, IV, expected_hash):
         cipher = AES.new(self.key, AES.MODE_CFB,  iv=IV)
         decMsg = cipher.decrypt(msg).decode('utf-8')
         hashed_msg = self.sha256(decMsg.encode('ascii'))
-        return decMsg, hashed_msg
+        if (hashed_msg != expected_hash):
+            return -1
+        else:
+            return decMsg, hashed_msg
 
-    @staticmethod
-    def sha256(msg):
+    def sha256(self, msg):
         if not isinstance(msg, bytes):
             msg = msg.encode('ascii')
         H = hashlib.new('sha256')
         H.update(msg)
         b_hash = H.digest()
         return b_hash
-
