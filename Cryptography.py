@@ -14,17 +14,20 @@ class session_crypto:
         cipher = AES.new(self.key, AES.MODE_CFB, iv=IV)
         hashed_msg = self.sha256(msg.encode('ascii'))
         encMsg = cipher.encrypt(msg.encode())
-        return encMsg, hashed_msg, IV
+        return encMsg + hashed_msg + IV
 
 
-    def decrypt(self, msg, IV, expected_hash):
+    def decrypt(self, msg):
+        IV = msg[len(msg)-16: ]
+        expected_hash = msg[len(msg)-48 : len(msg)-16]
+        msg = msg[ : len(msg)-48]
         cipher = AES.new(self.key, AES.MODE_CFB,  iv=IV)
         decMsg = cipher.decrypt(msg).decode('utf-8')
         hashed_msg = self.sha256(decMsg.encode('ascii'))
         if (hashed_msg != expected_hash):
             return -1
         else:
-            return decMsg, hashed_msg
+            return decMsg
 
     def sha256(self, msg):
         if not isinstance(msg, bytes):

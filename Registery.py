@@ -1,45 +1,39 @@
 import re
 import time
-import socket
+import base64
 
 class ServerRegistery:
 
-    def __init__(self):
-        Socket = socket.socket()
-        Socket.bind(('0.0.0.0', 12468))
-        Socket.listen(1)
-        Client, Adder = Socket.accept()
-        print("Client with adder : " + str(Adder) + " Connected !!!\n")
-        self.Menu(Client)
-        Socket.close()
+    def __init__(self, socket, crypto):
+        self.Menu(socket, crypto)
 
-    def Menu(self, Client):
+    def Menu(self, Client, crypto):
 
             while (1) :
-                Client.sendall("Welcome to Server Registery Serveice \n Please Enter your Username : \n".encode())
-                Username = Client.recv(1024).decode()
+
+                Client.sendall(crypto.encrypt("Welcome to Server Registery Serveice \n Please Enter your Username : \n"))
+                Username = crypto.decrypt(Client.recv(1024))
                 print(Username)
                 if  self.UsernameCheck(Username) == 1:
                     break
                 else :
-                    Client.sendall("This Username is already taken\n".encode())
-                    time.sleep(3)
+                    Client.sendall(crypto.encrypt("This Username is already taken\n"))
 
 
             flag = 1
             while (flag):
                 while (1) :
-                    Client.sendall("Please Enter your Password : \n".encode())
-                    Password = Client.recv(1024).decode()
+                    Client.sendall(crypto.encrypt("Please Enter your Password : \n"))
+                    Password = crypto.decrypt(Client.recv(1024))
                     if self.PassCheck(Username, Password) == 1 :
                         break
                     else :
-                        Client.sendall("Password you have choosed is weak !!! Please choose anotherone\n".encode())
+                        Client.sendall(crypto.encrypt("Password you have choosed is weak !!! Please choose anotherone\n"))
 
                 while (1) :
-                    Client.sendall("Please re-enter your password : \n".encode())
-                    if Password == Client.recv(1024).decode():
-                        Client.sendall("Registered !!!\n".encode())
+                    Client.sendall(crypto.encrypt("Please re-enter your password : \n"))
+                    if Password == crypto.decrypt(Client.recv(1024)):
+                        Client.sendall(crypto.encrypt("Registered !!!\n"))
 
                         File = open ("users.txt", "r")
                         Salt = 1
@@ -51,13 +45,13 @@ class ServerRegistery:
                         File.close()
 
                         File = open("Users.txt", "a")
-                        File.write(Username + ":" + str(Salt) + ":" + Password + "\n")
+                        File.write(Username + ":" + str(Salt) + ":" + base64.b64encode(crypto.sha256(Password + str(Salt))).decode() + "\n")
                         File.close()
 
                         flag = 0
                         break
                     else :
-                        Client.sendall("Repeated Password is  not the same as Password !!!\n".encode())
+                        Client.sendall(crypto.encrypt("Repeated Password is  not the same as Password !!!\n"))
                         break
             return 1
 
@@ -99,19 +93,17 @@ class ServerRegistery:
 
 class ClientRegistery :
 
-    def  __init__(self):
-        Socket = socket.socket()
-        Socket.connect(('localhost', 12468))
-        self.Menu(Socket)
-        Socket.close()
+    def  __init__(self, socket, crypto):
+        self.Menu(socket, crypto)
 
-    def Menu (self, Socket) :
+    def Menu (self, Socket, crypto) :
 
         while (1):
-            print(Socket.recv(1024).decode())
+
+            print(crypto.decrypt(Socket.recv(1024)))
             Username = input()
-            Socket.sendall(Username.encode())
-            if Socket.recv(1024).decode() == "Please Enter your Password : \n" :
+            Socket.sendall(crypto.encrypt(Username))
+            if crypto.decrypt(Socket.recv(1024)) == "Please Enter your Password : \n" :
                 break
             else :
                 print("This Username is already taken\n")
@@ -121,8 +113,8 @@ class ClientRegistery :
             while (1):
                 print("Please Enter your Password : \n")
                 Password = input()
-                Socket.sendall(Password.encode())
-                if Socket.recv(1024).decode() == "Please re-enter your password : \n" :
+                Socket.sendall(crypto.encrypt(Password))
+                if crypto.decrypt(Socket.recv(1024)) == "Please re-enter your password : \n" :
                     break
                 else :
                     print("Password you have choosed is weak !!! Please choose anotherone\n")
@@ -130,8 +122,8 @@ class ClientRegistery :
             while (1):
                 print("Please re-enter your password : \n")
                 Password = input()
-                Socket.sendall(Password.encode())
-                if Socket.recv(1024).decode() == "Registered !!!\n" :
+                Socket.sendall(crypto.encrypt(Password))
+                if crypto.decrypt(Socket.recv(1024)) == "Registered !!!\n" :
                     print("Registered !!!\n")
                     flag = 0
                     break
