@@ -17,10 +17,10 @@ class Registery:
             return "Password you have choosed is a weak password !!! please chosse anotherone\n"
 
         if re.match(r'TopSecret', ConfLevel, re.I) == None and re.match(r'Secret', ConfLevel, re.I) == None and re.match(r'Confidential', ConfLevel, re.I) == None and re.match(r'Unclassified', ConfLevel, re.I) == None :
-            return "Confidentiality level is not Valid !!!"
+            return "Confidentiality level is not Valid !!!\n"
 
         if re.match(r'VeryTrusted', IntegLevel, re.I) == None and re.match(r'Trusted', IntegLevel,re.I) == None and re.match(r'SlightlyTrusted',IntegLevel,re.I) == None and re.match(r'Untrusted', IntegLevel, re.I) == None:
-                return "Integrity level is not Valid !!!"
+                return "Integrity level is not Valid !!!\n"
 
         File = open("users.txt", "r")
         Salt = 1
@@ -35,7 +35,7 @@ class Registery:
         File.write(Username + ":" + ConfLevel + ":" + IntegLevel + ":" + str(Salt) + ":" + base64.b64encode(crypto.sha256(Password + str(Salt))).decode() + "\n")
         File.close()
 
-        return "Registered !!!"
+        return "Registered !!!\n"
 
 
     def UsernameCheck(self, Username):
