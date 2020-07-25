@@ -2,6 +2,8 @@ import time
 import base64
 import sys
 import time
+import Cryptography
+import Socket
 
 ## must be global values of main programm
 timervalue = 1
