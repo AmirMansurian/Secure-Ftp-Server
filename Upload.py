@@ -3,12 +3,11 @@ import os
 
 class Upload :
 
-    def PutFile (self ,Args) :
+    def PutFile (self ,Args, Owner) :
 
-        Owner = Args[0];
-        FileName = Args[1];
-        ConfLevel = Args[2];
-        IntegLevel = Args[3];
+        FileName = Args[0];
+        ConfLevel = Args[1];
+        IntegLevel = Args[2];
 
         if (self.FileNameCheck(FileName) == -1) :
             return "This file is already available\n"
