@@ -18,7 +18,7 @@ class Upload :
                 return "Integrity level is not Valid !!!\n"
 
         File = open("Files/" + FileName + ".txt", "w+")
-        File.write(Owner + " " + ConfLevel + " " + IntegLevel)
+        File.write(Owner + " " + ConfLevel + " " + IntegLevel + "\n")
         File.close()
 
         return FileName + ".txt" + " was successfully uploaded !!!\n"
