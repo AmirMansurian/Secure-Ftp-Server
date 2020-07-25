@@ -1,59 +1,42 @@
 import re
-import time
 import base64
 
-class ServerRegistery:
+class Registery:
 
-    def __init__(self, socket, crypto):
-        self.Menu(socket, crypto)
+    def Registeration(self, Args, crypto):
 
-    def Menu(self, Client, crypto):
+        Username = Args[0];
+        Password = Args[1];
+        ConfLevel = Args[2];
+        IntegLevel = Args[3];
 
-            while (1) :
+        if self.UsernameCheck(Username) == -1 :
+            return "This username is already taken !!!\n"
 
-                Client.sendall(crypto.encrypt("Welcome to Server Registery Serveice \n Please Enter your Username : \n"))
-                Username = crypto.decrypt(Client.recv(1024))
-                print(Username)
-                if  self.UsernameCheck(Username) == 1:
-                    break
-                else :
-                    Client.sendall(crypto.encrypt("This Username is already taken\n"))
+        if self.PassCheck(Username, Password) == -1 :
+            return "Password you have choosed is a weak password !!! please chosse anotherone\n"
 
+        if re.match(r'TopSecret', ConfLevel, re.I) == None and re.match(r'Secret', ConfLevel, re.I) == None and re.match(r'Confidential', ConfLevel, re.I) == None and re.match(r'Unclassified', ConfLevel, re.I) == None :
+            return "Confidentiality level is not Valid !!!"
 
-            flag = 1
-            while (flag):
-                while (1) :
-                    Client.sendall(crypto.encrypt("Please Enter your Password : \n"))
-                    Password = crypto.decrypt(Client.recv(1024))
-                    if self.PassCheck(Username, Password) == 1 :
-                        break
-                    else :
-                        Client.sendall(crypto.encrypt("Password you have choosed is weak !!! Please choose anotherone\n"))
+        if re.match(r'VeryTrusted', IntegLevel, re.I) == None and re.match(r'Trusted', IntegLevel,re.I) == None and re.match(r'SlightlyTrusted',IntegLevel,re.I) == None and re.match(r'Untrusted', IntegLevel, re.I) == None:
+                return "Integrity level is not Valid !!!"
 
-                while (1) :
-                    Client.sendall(crypto.encrypt("Please re-enter your password : \n"))
-                    if Password == crypto.decrypt(Client.recv(1024)):
-                        Client.sendall(crypto.encrypt("Registered !!!\n"))
+        File = open("users.txt", "r")
+        Salt = 1
+        while 1:
+            line = File.readline()
+            if not line:
+                break
+            Salt = Salt + 1
+        File.close()
 
-                        File = open ("users.txt", "r")
-                        Salt = 1
-                        while 1:
-                            line = File.readline()
-                            if not line:
-                                break
-                            Salt = Salt + 1
-                        File.close()
+        File = open("Users.txt", "a")
+        File.write(Username + ":" + ConfLevel + ":" + IntegLevel + ":" + str(Salt) + ":" + base64.b64encode(crypto.sha256(Password + str(Salt))).decode() + "\n")
+        File.close()
 
-                        File = open("Users.txt", "a")
-                        File.write(Username + ":" + str(Salt) + ":" + base64.b64encode(crypto.sha256(Password + str(Salt))).decode() + "\n")
-                        File.close()
+        return "Registered !!!"
 
-                        flag = 0
-                        break
-                    else :
-                        Client.sendall(crypto.encrypt("Repeated Password is  not the same as Password !!!\n"))
-                        break
-            return 1
 
     def UsernameCheck(self, Username):
 
@@ -89,45 +72,3 @@ class ServerRegistery:
             IsValid = -1
 
         return IsValid
-
-
-class ClientRegistery :
-
-    def  __init__(self, socket, crypto):
-        self.Menu(socket, crypto)
-
-    def Menu (self, Socket, crypto) :
-
-        while (1):
-
-            print(crypto.decrypt(Socket.recv(1024)))
-            Username = input()
-            Socket.sendall(crypto.encrypt(Username))
-            if crypto.decrypt(Socket.recv(1024)) == "Please Enter your Password : \n" :
-                break
-            else :
-                print("This Username is already taken\n")
-
-        flag = 1
-        while (flag):
-            while (1):
-                print("Please Enter your Password : \n")
-                Password = input()
-                Socket.sendall(crypto.encrypt(Password))
-                if crypto.decrypt(Socket.recv(1024)) == "Please re-enter your password : \n" :
-                    break
-                else :
-                    print("Password you have choosed is weak !!! Please choose anotherone\n")
-
-            while (1):
-                print("Please re-enter your password : \n")
-                Password = input()
-                Socket.sendall(crypto.encrypt(Password))
-                if crypto.decrypt(Socket.recv(1024)) == "Registered !!!\n" :
-                    print("Registered !!!\n")
-                    flag = 0
-                    break
-                else :
-                    print("Repeated Password is  not the same as Password !!!\n")
-                    break
-        return 1
