@@ -17,7 +17,7 @@ class Upload :
         if re.match(r'VeryTrusted', IntegLevel, re.I) == None and re.match(r'Trusted', IntegLevel,re.I) == None and re.match(r'SlightlyTrusted',IntegLevel,re.I) == None and re.match(r'Untrusted', IntegLevel, re.I) == None:
                 return "Integrity level is not Valid !!!\n"
 
-        File = open("Files/" + FileName + ".txt", "w+\n")
+        File = open("Files/" + FileName + ".txt", "w+")
         File.write(Owner + " " + ConfLevel + " " + IntegLevel)
         File.close()
 
