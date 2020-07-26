@@ -17,17 +17,17 @@ class Upload :
         if re.match(r'VeryTrusted', IntegLevel, re.I) == None and re.match(r'Trusted', IntegLevel,re.I) == None and re.match(r'SlightlyTrusted',IntegLevel,re.I) == None and re.match(r'Untrusted', IntegLevel, re.I) == None:
                 return "Integrity level is not Valid !!!\n"
 
-        File = open("Files/" + FileName + ".txt", "w+")
+        File = open("Files/" + FileName, "w+")
         File.write(Owner + " " + ConfLevel + " " + IntegLevel + "\n")
         File.close()
 
-        return FileName + ".txt" + " was successfully uploaded !!!\n"
+        return FileName + " was successfully uploaded !!!\n"
 
 
 
     def FileNameCheck (self, FileName) :
         dir = os.listdir('Files/')
         for names in dir :
-            if FileName + ".txt" == names :
+            if FileName == names :
                 return -1
         return 1

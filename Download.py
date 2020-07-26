@@ -10,7 +10,7 @@ class Download :
         if self.OwnerCheck(Owner, FileName) == -1 :
            return "Permission Denied !!!\n"
 
-        os.remove("Files/" + FileName + ".txt")
+        os.remove("Files/" + FileName)
 
         return FileName + ".txt Removed from Server Successfully !!!\n"
 
@@ -19,14 +19,14 @@ class Download :
         IsValid = -1
         dir = os.listdir('Files/')
         for names in dir :
-            if FileName + ".txt" == names :
+            if FileName == names :
                 IsValid = 1
         return IsValid
 
     def OwnerCheck (self, Owner, FileName) :
         dir = os.listdir('Files/')
         for names in dir:
-            if FileName + ".txt" == names :
+            if FileName == names :
                 File = open("Files/" + names, "r")
                 line = File.readline()
                 set = line.split(" ")

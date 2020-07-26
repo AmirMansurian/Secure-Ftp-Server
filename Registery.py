@@ -1,5 +1,7 @@
 import re
+import datetime
 import base64
+import Cryptography
 
 class Registery:
 
@@ -32,7 +34,7 @@ class Registery:
         File.close()
 
         File = open("Users.txt", "a")
-        File.write(Username + ":" + ConfLevel + ":" + IntegLevel + ":" + str(Salt) + ":" + base64.b64encode(crypto.sha256(Password + str(Salt))).decode() + "\n")
+        File.write(Username + ":" + ConfLevel + ";" + IntegLevel + ";" + str(Salt) + ";" + base64.b64encode(crypto.sha256(Password + str(Salt))).decode() + ";0;" + str(datetime.datetime.now()) + "\n")
         File.close()
 
         return "Registered !!!\n"
@@ -72,3 +74,15 @@ class Registery:
             IsValid = -1
 
         return IsValid
+
+
+a = Registery()
+c = Cryptography.session_crypto("key")
+
+set = [""]*4
+set[0] = "soheil"
+set[1] = "Amir@1377"
+set[2] = "TopSecret"
+set[3] = "VeryTrusted"
+
+print(a.Registeration(set, c))

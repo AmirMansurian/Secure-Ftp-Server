@@ -1,84 +1,94 @@
-import time
+import datetime
 import base64
-import sys
-import time
-import Cryptography
-import Socket
-
-## must be global values of main programm
-timervalue = 1
-j = 1 #exponentioal power for timer value
-##
 
 #client sent this command to server : Login "Username" "Password" . we decrypt this message and send "Username","password" and socket 
 #and crypto module to the ServerLogin class. 
 class serverLogin:
-    
 
-    def __init__(self, crypto, clientSocket,username, password):
+    def __init__(self, crypto):
         self.crypto = crypto
-        self.clientSocket = clientSocket
-        self.Login(self,username,password)
 
     def Login(self,username, password): ## main login process
+
         #backOff
-        while True:
-
-            returnvalue = self.loginProcess(username, password)  ## login proccess method  
+        returnvalue = self.loginProcess(username, password)  ## login proccess method
              # 0 for not successful login , 1 for username not found , 2 for incorrect password , 3 for successfull login
-            if returnvalue == 0:
-                self.clientSocket.sendall(self.crypto.encrypt("Something was wrong, try again \n"))
-                break
-            if returnvalue == 1:
-                self.clientSocket.sendall(self.crypto.encrypt("username Not found, you must sign up first"))
-                break
-            if returnvalue == 2: #incorrect password
-                self.clientSocket.sendall(self.crypto.encrypt("incorrect password, you can sign in again after"+ str(timervalue) + "seconds"))
-                self.timedelay(timervalue)
-                timervalue =  2**j
-                j = j + 1 
-                break    ####################################
-            if returnvalue == 3:# successful login
-                self.clientSocket.sendall(self.crypto.encrypt("Logged in successfully"))
-                break
+        if returnvalue[0] == 0:
+            return "Something was wrong, try again \n"
+
+        elif returnvalue[0] == 1:
+            return "username Not found, you must sign up first\n"
+
+        if returnvalue[0] == 2: #incorrect password
+
+            ret = ""
+            with open("Users.txt", "r") as file:
+                list_of_lines = file.readlines()
+                set = list_of_lines[returnvalue[1]-1].split(";")
+
+                if int(set[5]) >= 2 :
+                    set[5] = str(int(set[5]) + 1)
+                    sec = pow(2, int(set[5]) + 3)
+                    sec_added = datetime.timedelta(seconds=sec)
+                    Next_Time = datetime.datetime.now() + sec_added
+                    list_of_lines[returnvalue[1]-1] = set[0] + ";" + set[1] + ";" + set[2] + ";" + set[3] + ";" + set[4] + ";" + set[5] + ";" + str(Next_Time) + "\n"
+                    ret = "The number of attempts is more than allowed !!! Try again later\n"
+
+                else :
+                    list_of_lines[returnvalue[1]-1] = set[0] + ";" + set[1] + ";" + set[2] + ";" + set[3] + ";" + set[4] + ";" + str(int(set[5])+1) + ";" + set[6]
+                    ret = "You have entered incorrect password \n"
+
+            a_file = open("Users.txt", "w")
+            a_file.writelines(list_of_lines)
+            a_file.close()
+
+            return ret
 
 
+        if returnvalue[0] == 3:# successful login
 
+            with open("Users.txt", "r") as file:
+                list_of_lines = file.readlines()
+                set = list_of_lines[returnvalue[1]-1].split(";")
+                if set[6] >  str(datetime.datetime.now()):
+                    return "The number of attempts is more than allowed !!! Try again later\n"
+
+                list_of_lines[returnvalue[1]-1] = set[0] + ";" + set[1] + ";" + set[2] + ";" + set[3] + ";" + set[4] + ";0;" + str(datetime.datetime.now()) + "\n"
+
+            a_file = open("Users.txt", "w")
+            a_file.writelines(list_of_lines)
+            a_file.close()
+
+            return "Logged in successfully\n"
 
 
     def loginProcess(self, username, password):
         successLogin = 0 # 0 for not successful login , 1 for username not found , 2 for incorrect password , 3 for successfull login
         found = False # for username detection
+        LineNumber = 0;
         with open("Users.txt", "r") as file:
-            for x in file:
-                 theSet = x.readline()
-                 try:
-                    usr,conf,integ,salt,hashedPass = theSet.split(":")
-                 except:
-                     successLogin = 0  ## some thing was wrong
-                     return successLogin
-                                 
-                 if username == usr:
-                     found = True
-                     temp = base64.b64encode(self.crypto.sha256(password + salt)).decode()
+            lines = file.readlines()
+            print(lines)
 
-                     if temp == hashedPass:
+            for theSet in lines :
+                LineNumber = LineNumber + 1
+                try:
+                    usr,conf,integ,salt,hashedPass, tryNumber, Date = theSet.split(";")
+                    print(usr)
+                    print(username)
+                except:
+                    successLogin = 0  ## some thing was wrong
+                    return successLogin, ""
 
-                         successLogin = 3 ## correct password -> login successfuly
-                         return successLogin
-                     else:
-                         successLogin = 2 ##incorrect password
-                         return successLogin
-            if found == False:
-                successLogin = 1 ## user not found 
-                return successLogin
-        return 0
+                if username == usr:
+                    temp = base64.b64encode(self.crypto.sha256(password + salt)).decode()
 
+                    if temp == hashedPass:
+                        successLogin = 3 ## correct password -> login successfuly
+                        return successLogin, LineNumber
+                    else:
+                        successLogin = 2 ##incorrect password
+                        return successLogin, LineNumber
 
+        return 1
 
-    def timedelay(self,x):
-        while x >= 0:
-          #  print("You can try again in " + str(x) + "seconds...")
-           # x = x - 1
-            #sys.stdout.write("\033[K") # Clear to the end of line
-            time.sleep(1)
