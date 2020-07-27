@@ -34,7 +34,7 @@ class Registery:
         File.close()
 
         File = open("Users.txt", "a")
-        File.write(Username + ":" + ConfLevel + ";" + IntegLevel + ";" + str(Salt) + ";" + base64.b64encode(crypto.sha256(Password + str(Salt))).decode() + ";0;" + str(datetime.datetime.now()) + "\n")
+        File.write(Username + ";" + ConfLevel + ";" + IntegLevel + ";" + str(Salt) + ";" + base64.b64encode(crypto.sha256(Password + str(Salt))).decode() + ";0;" + str(datetime.datetime.now()) + "\n")
         File.close()
 
         return "Registered !!!\n"
@@ -51,7 +51,7 @@ class Registery:
             if not line :
                 break
 
-            set = line.split(":")
+            set = line.split(";")
             if (Username == set[0]) :
                 Isvalid =  -1
 
