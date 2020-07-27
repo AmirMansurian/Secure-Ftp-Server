@@ -1,4 +1,5 @@
 import re
+import List
 import Socket
 import Cryptography
 import Registery
@@ -11,7 +12,7 @@ import Write
 
 class Server :
 
-    def __init__(self, Socket, Crypto, Register, Login, Download, Upload, Read, Write):
+    def __init__(self, Socket, Crypto, Register, Login, Download, Upload, Read, Write, List):
 
         self.Socket = Socket
         self.Crypto = Crypto
@@ -21,6 +22,7 @@ class Server :
         self.Download = Download
         self.Read = Read
         self.Write = Write
+        self.List = List
         self.ConnectedUser = ""
         self.UserConf = ""
         self.UserInteg = ""
@@ -75,6 +77,14 @@ class Server :
                         Response = self.Login.Login(Sets[1], Sets[2], self.Crypto)
                         self.Socket.sendall(self.Crypto.encrypt(Response))
                         self.SetConnectedUser(Sets[1])
+
+                elif re.match(r'list', Sets[0], re.I) != None :
+
+                    if len(Sets) != 1 :
+                        self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
+                    else :
+                        Response = self.List.GetList()
+                        self.Socket.sendall(self.Crypto.encrypt(Response))
 
                 elif re.match(r'put', Sets[0], re.I) != None :
 
