@@ -5,13 +5,10 @@ import base64
 #and crypto module to the ServerLogin class. 
 class serverLogin:
 
-    def __init__(self, crypto):
-        self.crypto = crypto
-
-    def Login(self,username, password): ## main login process
+    def Login(self,username, password, crypto): ## main login process
 
         #backOff
-        returnvalue = self.loginProcess(username, password)  ## login proccess method
+        returnvalue = self.loginProcess(username, password, crypto)  ## login proccess method
              # 0 for not successful login , 1 for username not found , 2 for incorrect password , 3 for successfull login
         if returnvalue[0] == 0:
             return "Something was wrong, try again \n"
@@ -62,7 +59,7 @@ class serverLogin:
             return "Logged in successfully\n"
 
 
-    def loginProcess(self, username, password):
+    def loginProcess(self, username, password, crypto):
         successLogin = 0 # 0 for not successful login , 1 for username not found , 2 for incorrect password , 3 for successfull login
         found = False # for username detection
         LineNumber = 0;
@@ -81,7 +78,7 @@ class serverLogin:
                     return successLogin, ""
 
                 if username == usr:
-                    temp = base64.b64encode(self.crypto.sha256(password + salt)).decode()
+                    temp = base64.b64encode(crypto.sha256(password + salt)).decode()
 
                     if temp == hashedPass:
                         successLogin = 3 ## correct password -> login successfuly
