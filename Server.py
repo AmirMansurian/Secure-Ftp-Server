@@ -15,7 +15,7 @@ KEY_THRESHOLD = 2
 
 class Server :
 
-    def __init__(self, Socket, Crypto, Register, Login, Download, Upload, Read, Write, SessionKeyGen):
+    def __init__(self, Socket, Crypto, Register, Login, Download, Upload, List, Read, Write, SessionKeyGen):
 
         self.Socket = Socket
         self.Crypto = Crypto
@@ -23,6 +23,7 @@ class Server :
         self.Login = Login
         self.Upload = Upload
         self.Download = Download
+        self.List = List
         self.Read = Read
         self.Write = Write
         self.ConnectedUser = ""
@@ -147,7 +148,7 @@ def __main__():
     socket = Socket.ServerSocket()
     connection = socket.Socket()
     sr = Server(connection, Cryptography.session_crypto(None), Registery.Registery(), Login.serverLogin(),
-               Download.Download(), Upload.Upload(), Read.Read(), Write.Write(), SessionKeyExchange.ServerSession(None))
+               Download.Download(), Upload.Upload(), List.List() ,Read.Read(), Write.Write(), SessionKeyExchange.ServerSession(None))
     sr.Handler()
 
 __main__()
