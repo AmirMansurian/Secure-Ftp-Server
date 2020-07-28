@@ -117,4 +117,49 @@ class Auditor :
         return 1
 
 
+    def Read_Write_Auditor(username, user_conf, user_integ, filename, file_conf, file_integ, operation):
+        # Log command
+        # Log fromat:
+        # Time;Operation;Username;UserConf;UserInteg;Filename;FileConf;FileInteg
+        file = open("Logs/ReadWrite_log.txt", 'a')
+        file.write(str(datetime.datetime.now()) + ";" + operation + ';' + username + ';' +
+                  user_conf[1:] + ';' +
+                 user_integ[1:] + ';' +
+                 filename + ';' + 
+                 file_conf[1:] + ';' +
+                file_integ[1:])
+        file.close()
+
+        # Audit command
+
+        # Audit path traversal attack 
+        if '\\' in filename or '/' in filename:
+            print("[" + str(datetime.datetime.now()) + "] " + "Path Traversal : " + username + " tried to " +
+                 operation + " " + filename + "\n")
+
+        # Audit attack against mandatory access control
+        if (operation == 'write'):
+            if (user_conf > file_conf):
+                if (user_integ < file_integ):
+                    print("[" + str(datetime.datetime.now()) + "] " + "Confidentiality and integrity violation attempt by " 
+                          + username + " on " + filename + " : Write attemp")
+                else:
+                    print("[" + str(datetime.datetime.now()) + "] " + "Confidentiality violation attempt by " 
+                          + username + " on " + filename + " : Write attemp")
+            elif (user_integ < file_integ):
+                print("[" + str(datetime.datetime.now()) + "] " + "Integrity violation attempt by " +
+                     username + " on " + filename + " : Write attemp")
+
+        elif (operation == 'read'):
+            if (user_conf < file_conf):
+                if (user_integ > file_integ):
+                    print("Confidentiality and integrity violation attempt by " + username 
+                    + " on " + filename + " : Read attemp")
+                else:
+                    print("Confidentiality violation attempt by " + username + " on " + filename + " : Read attemp")
+            elif (user_integ > file_integ):
+                print("Integrity violation attempt by " + username + " on " + filename + " : Read attemp")
+
+        return 1
+
 
