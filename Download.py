@@ -2,7 +2,11 @@ import os
 
 class Download :
 
-    def GetFile (self, FileName, Owner) :
+    def GetFile (self, FileName, Owner, logger) :
+
+        log = logger.Put_Get_Audit(Owner, FileName, "Get")
+        if log == -1 :
+            return "You had too many attemps for get illegal file !!!\n"
 
         # Check for path traversal attack
         if '\\' in FileName or '/' in FileName:

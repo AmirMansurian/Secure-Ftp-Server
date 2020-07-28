@@ -4,7 +4,7 @@ class Write:
         filename = args[0]
         # Check for path traversal attack
         if '\\' in filename or '/' in filename:
-            return "Invalid file name"
+            return "Invalid file name\n"
 
         content = args[1]
         if self._FileNameCheck(filename) == -1:

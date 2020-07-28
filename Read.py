@@ -4,7 +4,7 @@ class Read:
 
         # Check for path traversal attack
         if '\\' in filename or '/' in filename:
-            return "Invalid file name"
+            return "Invalid file name\n"
 
         if self._FileNameCheck(filename) == -1:
             return "File Not Found !!!\n"

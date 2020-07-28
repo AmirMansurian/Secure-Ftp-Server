@@ -5,7 +5,9 @@ import base64
 #and crypto module to the ServerLogin class. 
 class serverLogin:
 
-    def Login(self,username, password, crypto): ## main login process
+    def Login(self,username, password, crypto, Loger): ## main login process
+
+        Loger.Login_Auditor(username)
 
         #backOff
         returnvalue = self.loginProcess(username, password, crypto)  ## login proccess method

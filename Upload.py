@@ -3,15 +3,19 @@ import os
 
 class Upload :
 
-    def PutFile (self ,Args, Owner) :
+    def PutFile (self ,Args, Owner, logger) :
 
         FileName = Args[0];
         ConfLevel = Args[1];
         IntegLevel = Args[2];
 
+        log = logger.Put_Get_Audit(Owner, FileName, "Put")
+        if log == -1 :
+            return "You hade too many attemps for put file that already exist !!! \n"
+
         # Check for path traversal attack
         if '\\' in FileName or '/' in FileName:
-            return "Invalid file name"
+            return "Invalid file name\n"
 
         if (self.FileNameCheck(FileName) == -1) :
             return "This file is already available\n"
