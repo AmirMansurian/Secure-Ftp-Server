@@ -137,6 +137,49 @@ class Auditor :
             print("[" + str(datetime.datetime.now()) + "] " + "Path Traversal : " + username + " tried to " +
                  operation + " " + filename + "\n")
 
+    
+        dir = os.listdir('Files/')
+        if filename not in dir :
+            File = open("Logs/ReadWrite_log.txt", "r")
+            lines = File.readlines()
+            for line in lines:
+                set = line.split(";")
+                if (set[1] == operation and set[2] == username and 
+                    set[5] == filename and str(datetime.datetime.now() - datetime.timedelta(1)) <= set[0]):
+                    counter = counter + 1
+            File.close()
+
+        if counter >= 5:
+            print(
+                "[" + str(datetime.datetime.now()) + "] " + "User " + username + " tried to " + operation + " " + filename,
+                " (that doesnt exist) " + str(counter) + " times in the last 24 hour\n")
+            return -1
+
+
+        if filename in dir :
+            counter = 0
+            File = open("Files/" + filename, "r")
+            list_of_lines = File.readline()
+            set = list_of_lines.split(" ")
+            owner = set[0]
+            File.close()
+
+        if owner != username:
+            File = open("Logs/ReadWrite_log.txt", "r")
+            list_of_lines = File.readlines()
+            for line in list_of_lines:
+                set = line.split(";")
+                if (set[1] == Owner and set[3] == Operation and set[4] == FileName 
+                    and str(datetime.datetime.now() - datetime.timedelta(1)) <= set[0]):
+                    counter = counter + 1
+            File.close()
+
+        if counter >= 5 :
+            print("[" + str(datetime.datetime.now()) + "] " + "User " + username + " tried to " 
+                  + operation + " " + filename, " (that is not his/her own file) " + str(counter) + " times in last 24 hour\n")
+            return -1
+
+
         # Audit attack against mandatory access control
         if (operation == 'write'):
             if (user_conf > file_conf):
@@ -153,13 +196,14 @@ class Auditor :
         elif (operation == 'read'):
             if (user_conf < file_conf):
                 if (user_integ > file_integ):
-                    print("Confidentiality and integrity violation attempt by " + username 
+                    print("[" + str(datetime.datetime.now()) + "] " + "Confidentiality and integrity violation attempt by " + username 
                     + " on " + filename + " : Read attemp")
                 else:
-                    print("Confidentiality violation attempt by " + username + " on " + filename + " : Read attemp")
+                    print("[" + str(datetime.datetime.now()) + "] " + "Confidentiality violation attempt by " + username 
+                          + " on " + filename + " : Read attemp")
             elif (user_integ > file_integ):
-                print("Integrity violation attempt by " + username + " on " + filename + " : Read attemp")
+                print("[" + str(datetime.datetime.now()) + "] " + "Integrity violation attempt by " + username 
+                      + " on " + filename + " : Read attemp")
 
         return 1
-
 
