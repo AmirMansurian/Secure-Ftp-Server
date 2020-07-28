@@ -4,9 +4,7 @@ class Download :
 
     def GetFile (self, FileName, Owner, logger) :
 
-        log = logger.Put_Get_Audit(Owner, FileName, "Get")
-        if log == -1 :
-            return "You had too many attemps for get illegal file !!!\n"
+        logger.Put_Get_Audit(Owner, FileName, "Get")
 
         # Check for path traversal attack
         if '\\' in FileName or '/' in FileName:

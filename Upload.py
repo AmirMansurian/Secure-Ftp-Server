@@ -11,7 +11,7 @@ class Upload :
 
         log = logger.Put_Get_Audit(Owner, FileName, "Put")
         if log == -1 :
-            return "You hade too many attemps for put file that already exist !!! \n"
+            return "You hade too many attemps for put file !!! \n"
 
         # Check for path traversal attack
         if '\\' in FileName or '/' in FileName:

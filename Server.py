@@ -126,11 +126,29 @@ class Server :
 
                 elif re.match(r'write', Sets[0], re.I) != None :
 
-                    if len(Sets) != 3 :
-                        self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
-                    else :
-                        Response = self.Write.WriteToFile(Sets[1:], self.UserConf, self.UserInteg)
-                        self.Socket.sendall(self.Crypto.encrypt(Response))
+                    Sets2 = Command.split("\"")
+
+                    if len(Sets2) == 1 :
+
+                        Sets3 = Sets2[0].split(" ")
+                        if len(Sets3) != 3 :
+                            self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
+                        else :
+                            Response = self.Write.WriteToFile(Sets3[1:], self.UserConf, self.UserInteg)
+                            self.Socket.sendall(self.Crypto.encrypt(Response))
+
+                    elif len(Sets2) == 3 :
+
+                        Sets3 = Sets2[0].split(" ")
+                        if len(Sets3) != 2 :
+                            self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
+                        else :
+                            temp = [""]*2
+                            temp[0] = Sets3[1]
+                            temp[1] = Sets2[1]
+                            Response = self.Write.WriteToFile(temp, self.UserConf, self.UserInteg)
+                            self.Socket.sendall(self.Crypto.encrypt(Response))
+
 
                 else :
                     self.Socket.sendall(self.Crypto.encrypt(Sets[0] + " is not a built-in command !!!\n"))
