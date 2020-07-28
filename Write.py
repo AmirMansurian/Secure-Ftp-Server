@@ -2,6 +2,10 @@ import os
 class Write:
     def WriteToFile(self, args, user_conf, user_integ):
         filename = args[0]
+        # Check for path traversal attack
+        if '\\' in filename or '/' in filename:
+            return "Invalid file name"
+
         content = args[1]
         if self._FileNameCheck(filename) == -1:
             return "File Not Found !!!\n"

@@ -1,6 +1,11 @@
 import os
 class Read:
     def ReadFromFile(self, filename, user_conf, user_integ):
+
+        # Check for path traversal attack
+        if '\\' in filename or '/' in filename:
+            return "Invalid file name"
+
         if self._FileNameCheck(filename) == -1:
             return "File Not Found !!!\n"
 

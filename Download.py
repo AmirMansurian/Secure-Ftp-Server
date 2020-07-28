@@ -4,6 +4,10 @@ class Download :
 
     def GetFile (self, FileName, Owner) :
 
+        # Check for path traversal attack
+        if '\\' in FileName or '/' in FileName:
+            return "Invalid file name"
+
         if self.FileNameCheck(FileName) == -1 :
            return "File Not Found !!!\n"
 

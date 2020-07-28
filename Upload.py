@@ -9,6 +9,10 @@ class Upload :
         ConfLevel = Args[1];
         IntegLevel = Args[2];
 
+        # Check for path traversal attack
+        if '\\' in FileName or '/' in FileName:
+            return "Invalid file name"
+
         if (self.FileNameCheck(FileName) == -1) :
             return "This file is already available\n"
         if re.match(r'TopSecret', ConfLevel, re.I) == None and re.match(r'Secret', ConfLevel, re.I) == None and re.match(r'Confidential', ConfLevel, re.I) == None and re.match(r'Unclassified', ConfLevel, re.I) == None :
