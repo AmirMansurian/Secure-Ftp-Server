@@ -1,17 +1,25 @@
 import os
 class Read:
-    def ReadFromFile(self, filename, user_conf, user_integ):
-
+    def ReadFromFile(self, username, filename, user_conf, user_integ, Loger):
+        Loger.Read_Write_Auditor(username, self._normalize_level(user_conf), 
+                                 self._normalize_level(user_integ), 
+                                 self._normalize_level(filename),
+                                 self._normalize_level(file_conf), 
+                                 self._normalize_level(file_integ), 'read')
+                                 
         # Check for path traversal attack
         if '\\' in filename or '/' in filename:
-            return "Invalid file name\n"
-
+            return "Invalid file name"
+        
         if self._FileNameCheck(filename) == -1:
             return "File Not Found !!!\n"
 
         # Read access control data from the file
         file = open("Files/" + filename, "r")
         file_owner, file_conf, file_integ = file.readline().split(' ')
+        
+        if self._CheckDiscretionaryAccess(file.readline(), username) == -1:
+            return "Permission Denied!(By discretionary access control rules)\n"
         # Remove \n from file_integ string
         file_integ = file_integ[:-1]
         file.close()
@@ -23,7 +31,18 @@ class Read:
         file = open("Files/" + filename, "r")
         fileContent = file.readlines()
         file.close()
-        return fileContent
+        return fileContent[2:]
+
+
+    def _CheckDiscretionaryAccess(self, acl, username):
+        index = acl.find(username + ':')
+        if index == -1:
+            return 1
+
+        user_acl = acl[ index + len(username) + 1 : index + len(username) + 4]
+        if 'r' in user_acl:
+            return 1
+        return -1
 
     # Check file's existance
     def _FileNameCheck (self, FileName):
@@ -57,3 +76,4 @@ class Read:
             return "2" + level
         if (level == "Unclassified" or level == "Untrusted"):
             return "1" + level
+
