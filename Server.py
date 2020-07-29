@@ -29,6 +29,7 @@ class Server :
         self.ConnectedUser = ""
         self.UserConf = ""
         self.UserInteg = ""
+        self.IsHoneyPot = 0
         self.SessionKeyGen = SessionKeyGen
         self.fresh_key = 0
         
@@ -89,8 +90,19 @@ class Server :
                         self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
                     else :
                         Response = self.Login.Login(Sets[1], Sets[2], self.Crypto)
-                        self.Socket.sendall(self.Crypto.encrypt(Response))
-                        self.SetConnectedUser(Sets[1])
+                        if Response == "Logged in successfully\n" :
+                            self.SetConnectedUser(Sets[1])
+                            self.Socket.sendall(self.Crypto.encrypt(Response))
+
+                        elif Response == "HoneyPot\n":
+                            self.Socket.sendall(self.Crypto.encrypt("Logged in successfully\n"))
+                            self.IsHoneyPot = 1
+                            self.SetConnectedUser(Sets[1])
+
+                        else :
+                            self.Socket.sendall(self.Crypto.encrypt(Response))
+
+
 
                 elif re.match(r'list', Sets[0], re.I) != None :
 

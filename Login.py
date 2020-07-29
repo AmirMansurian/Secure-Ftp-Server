@@ -25,7 +25,7 @@ class serverLogin:
                 list_of_lines = file.readlines()
                 set = list_of_lines[returnvalue[1]-1].split(";")
 
-                if int(set[5]) >= 2 :
+                if (int(set[5]) >= 2 and int(set[5]) <=6) or (int(set[5]) > 6 and set[6] >= str(datetime.datetime.now())) :
                     set[5] = str(int(set[5]) + 1)
                     sec = pow(2, int(set[5]) + 3)
                     sec_added = datetime.timedelta(seconds=sec)
@@ -33,7 +33,16 @@ class serverLogin:
                     list_of_lines[returnvalue[1]-1] = set[0] + ";" + set[1] + ";" + set[2] + ";" + set[3] + ";" + set[4] + ";" + set[5] + ";" + str(Next_Time) + "\n"
                     ret = "The number of attempts is more than allowed !!! Try again later\n"
 
-                else :
+                elif int(set[5]) > 6 and set[6] < str(datetime.datetime.now()) :
+                    set[5] = str(int(set[5]) + 1)
+                    sec = pow(2, int(set[5]) + 3)
+                    sec_added = datetime.timedelta(seconds=sec)
+                    Next_Time = datetime.datetime.now() + sec_added
+                    list_of_lines[returnvalue[1] - 1] = set[0] + ";" + set[1] + ";" + set[2] + ";" + set[3] + ";" + set[
+                        4] + ";" + set[5] + ";" + str(Next_Time) + "\n"
+                    ret = "HoneyPot\n"
+
+                elif int(set[5]) <= 2 :
                     list_of_lines[returnvalue[1]-1] = set[0] + ";" + set[1] + ";" + set[2] + ";" + set[3] + ";" + set[4] + ";" + str(int(set[5])+1) + ";" + set[6]
                     ret = "You have entered incorrect password \n"
 
