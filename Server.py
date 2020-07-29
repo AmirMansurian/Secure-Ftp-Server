@@ -121,7 +121,7 @@ class Server :
                     if len(Sets) != 2 :
                         self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
                     else :
-                        Response = self.Read.ReadFromFile(Sets[1], self.UserConf, self.UserInteg)
+                        Response = self.Read.ReadFromFile(self.ConnectedUser, Sets[1], self.UserConf, self.UserInteg)
                         self.Socket.sendall(self.Crypto.encrypt(Response))
 
                 elif re.match(r'write', Sets[0], re.I) != None :
@@ -134,7 +134,7 @@ class Server :
                         if len(Sets3) != 3 :
                             self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
                         else :
-                            Response = self.Write.WriteToFile(Sets3[1:], self.UserConf, self.UserInteg)
+                            Response = self.Write.WriteToFile(self.ConnectedUser, Sets3[1:], self.UserConf, self.UserInteg)
                             self.Socket.sendall(self.Crypto.encrypt(Response))
 
                     elif len(Sets2) == 3 :
