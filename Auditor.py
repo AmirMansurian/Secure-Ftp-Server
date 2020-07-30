@@ -5,60 +5,72 @@ import os
 class Auditor :
 
 
-    def Login_Auditor(self, Username):
+    def Login_Auditor(self, Username, IsHoneyPot):
 
-        Number_try = 0
-        File = open("Users.txt", "r")
-        Lines = File.readlines()
-        for line in Lines :
+        if IsHoneyPot == 0 :
+            Number_try = 0
+            File = open("Users.txt", "r")
+            Lines = File.readlines()
+            for line in Lines :
 
-            set = line.split(";")
+                set = line.split(";")
 
-            if Username == set[0]:
-                Number_try = set[5]
-                break
+                if Username == set[0]:
+                    Number_try = set[5]
+                    break
 
-        File.close()
+            File.close()
 
-        if int(Number_try) >= 3 and set[6] >= str(datetime.datetime.now()):
-            print("[" + str(datetime.datetime.now()) + "] " + Username + " had unsuccessfull login " + str(Number_try) + " times\n")
+            if int(Number_try) >= 3 and set[6] >= str(datetime.datetime.now()):
+                print("[" + str(datetime.datetime.now()) + "] " + Username + " had unsuccessfull login " + str(Number_try) + " times\n")
 
-        File = open("Logs/Auth_log.txt", "a")
+            File = open("Logs/Auth_log.txt", "a")
+            File.write(str(datetime.datetime.now()) + ";" + Username + ";login\n")
+            File.close()
 
-        File.write(str(datetime.datetime.now()) + ";" + Username + ";login\n")
+        else :
 
-        File.close()
+            print("[" + str(datetime.datetime.now()) + "] " + "User " + Username + " Entered HoneyPot Mode(Check for actions in Fake/Logs/) !!!\n")
+            File = open("Logs/Auth_log.txt", "a")
+            File.write(str(datetime.datetime.now()) + ";" + Username + ";login\n")
+            File.close()
 
 
-    def Put_Get_Audit (self, Owner, FileName, Operation) :
 
-        File = open("Logs/FileTransfer_log.txt", "a")
+    def Put_Get_Audit (self, Owner, FileName, Operation, IsHoneyPot) :
+
+        if IsHoneyPot == 0 :
+            File = open("Logs/FileTransfer_log.txt", "a")
+        else :
+            File = open("Fake/Logs/FileTransfer_log.txt", "a")
+
         File.write(str(datetime.datetime.now()) + ";" +Owner + ";tried to;" + Operation + ";" + FileName + ";\n")
         File.close()
 
         if '\\' in FileName or '/' in FileName:
             print("[" + str(datetime.datetime.now()) + "] " + "Path_Traversal : " + Owner + " tried to " + Operation + " " + FileName + "\n")
 
-        counter = 0
-        if Operation == "Put" :
+        if IsHoneyPot ==0 :
+            counter = 0
+            if Operation == "Put" :
 
-            File = open("Logs/FileTransfer_log.txt", "r")
+                File = open("Logs/FileTransfer_log.txt", "r")
 
-            list_of_lines = File.readlines()
-            index = len(list_of_lines)-1
+                list_of_lines = File.readlines()
+                index = len(list_of_lines)-1
 
-            while index >0 :
-                set = list_of_lines[index].split(";")
-                if set[1] == Owner and set[3] == Operation and set[4] and str(datetime.datetime.now() - datetime.timedelta(1)) <= set[0]:
-                    counter = counter + 1
-                index = index - 1
+                while index >0 :
+                    set = list_of_lines[index].split(";")
+                    if set[1] == Owner and set[3] == Operation and set[4] and str(datetime.datetime.now() - datetime.timedelta(1)) <= set[0]:
+                        counter = counter + 1
+                    index = index - 1
 
-            File.close()
+                File.close()
 
-        if counter >= 20:
-            print(
-                "[" + str(datetime.datetime.now()) + "] " + "User " + Owner + " tried to " + Operation + " the file " +  str(counter) + " times in last 24 hour\n")
-            return -1
+            if counter >= 20:
+                print(
+                    "[" + str(datetime.datetime.now()) + "] " + "User " + Owner + " tried to " + Operation + " the file " +  str(counter) + " times in last 24 hour\n")
+                return -1
 
         return 1
 
@@ -108,6 +120,3 @@ class Auditor :
                       + " on " + filename + " : Read attemp")
 
         return 1
-
-
-print("write file \"smd sd as\"".split("\""))

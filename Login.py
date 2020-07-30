@@ -7,7 +7,7 @@ class serverLogin:
 
     def Login(self,username, password, crypto, Loger): ## main login process
 
-        Loger.Login_Auditor(username)
+        Loger.Login_Auditor(username, 0)
 
         #backOff
         returnvalue = self.loginProcess(username, password, crypto)  ## login proccess method
@@ -40,6 +40,8 @@ class serverLogin:
                     Next_Time = datetime.datetime.now() + sec_added
                     list_of_lines[returnvalue[1] - 1] = set[0] + ";" + set[1] + ";" + set[2] + ";" + set[3] + ";" + set[
                         4] + ";" + set[5] + ";" + str(Next_Time) + "\n"
+
+                    Loger.Login_Auditor(username, 1)
                     ret = "HoneyPot\n"
 
                 elif int(set[5]) <= 2 :

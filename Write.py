@@ -1,6 +1,12 @@
 import os
 class Write:
-    def WriteToFile(self, args, user_conf, user_integ):
+    def WriteToFile(self, username, args, user_conf, user_integ, Loger):
+        Loger.Read_Write_Auditor(username, self._normalize_level(user_conf), 
+                                 self._normalize_level(user_integ), 
+                                 self._normalize_level(filename),
+                                 self._normalize_level(file_conf), 
+                                 self._normalize_level(file_integ), 'write')
+                                 
         filename = args[0]
         # Check for path traversal attack
         if '\\' in filename or '/' in filename:
@@ -13,7 +19,10 @@ class Write:
         # Read access control data from the file
         file = open("Files/" + filename, "r")
         file_header = file.readline()
+        file_acl = file.readline()
         file_owner, file_conf, file_integ = file_header.split(' ')
+        if self._CheckDiscretionaryAccess(file_acl, username) == -1:
+            return "Permission Denied!(By discretionary access control rules)\n"
         # Remove \n from file_integ string
         file_integ = file_integ[:-1]
         file.close()
@@ -23,10 +32,21 @@ class Write:
 
         # Begin writing proccess
         file = open("Files/" + filename, "w")
-        content = [file_header, content]
+        content = [file_header, file_acl, content]
         file.writelines(content)
         file.close()
         return "Writing on " + filename + " finished successfully."
+
+
+    def _CheckDiscretionaryAccess(self, acl, username):
+        index = acl.find(username + ':')
+        if index == -1:
+            return 1
+
+        user_acl = acl[ index + len(username) + 1 : index + len(username) + 4]
+        if 'w' in user_acl:
+            return 1
+        return -1
 
 
     # Check file's existance
@@ -37,6 +57,7 @@ class Write:
             if FileName == names :
                 IsValid = 1
         return IsValid
+
 
     def _CheckMandatoryAccess(self, user_conf, user_integ, file_conf, file_integ):
         # add a number to the beginning of level string
@@ -50,6 +71,7 @@ class Write:
         else:
             return -1
 
+
     def _normalize_level(self, level):
         # Add a number to the beginning of integ and 
         # conf level strings to make level comparison easier
@@ -61,4 +83,3 @@ class Write:
             return "2" + level
         if (level == "Unclassified" or level == "Untrusted"):
             return "1" + level
-

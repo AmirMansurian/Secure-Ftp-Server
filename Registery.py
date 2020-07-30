@@ -75,14 +75,3 @@ class Registery:
 
         return IsValid
 
-
-a = Registery()
-c = Cryptography.session_crypto("key")
-
-set = [""]*4
-set[0] = "soheil"
-set[1] = "Amir@1377"
-set[2] = "TopSecret"
-set[3] = "VeryTrusted"
-
-print(a.Registeration(set, c))
