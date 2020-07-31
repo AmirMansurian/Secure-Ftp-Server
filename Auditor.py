@@ -75,17 +75,28 @@ class Auditor :
         return 1
 
 
-    def Read_Write_Auditor(username, user_conf, user_integ, filename, file_conf, file_integ, operation):
+    def Read_Write_Auditor(self, username, user_conf, user_integ, filename, file_conf, file_integ, user_acl, operation):
         # Log command
         # Log fromat:
         # Time;Operation;Username;UserConf;UserInteg;Filename;FileConf;FileInteg
-        file = open("Logs/ReadWrite_log.txt", 'a')
-        file.write(str(datetime.datetime.now()) + ";" + operation + ';' + username + ';' +
-                  user_conf[1:] + ';' +
-                 user_integ[1:] + ';' +
-                 filename + ';' + 
-                 file_conf[1:] + ';' +
-                file_integ[1:])
+        try:
+            file = open("Logs/ReadWrite_log.txt", 'a')
+        except FileNotFoundError:
+            file = open("Logs/ReadWrite_log.txt", 'w')
+        if (len(file_conf) == 0 or len(file_integ) == 0):
+            file.write(str(datetime.datetime.now()) + ";" + operation + ';' + username + ';' +
+                      user_conf[1:] + ';' +
+                     user_integ[1:] + ';' +
+                     filename + ';' + 
+                     'no such file;\n')
+            file.close()
+        else:
+            file.write(str(datetime.datetime.now()) + ";" + operation + ';' + username + ';' +
+                      user_conf[1:] + ';' +
+                     user_integ[1:] + ';' +
+                     filename + ';' + 
+                     file_conf[1:] + ';' +
+                    file_integ[1:] + ';' + user_acl + '\n')
         file.close()
 
         # Audit command
@@ -93,6 +104,24 @@ class Auditor :
         if '\\' in filename or '/' in filename:
             print("[" + str(datetime.datetime.now()) + "] " + "Path Traversal : " + username + " tried to " +
                  operation + " " + filename + "\n")
+            return 1
+        
+        if operation == 'write' and user_acl != 'No DAC' and 'w' not in user_acl:
+            print("[" + str(datetime.datetime.now()) + "] " + "DAC violation attempt by " + username + " tried to " +
+                 operation + " " + filename + "\n")
+            return 1
+
+        if operation == 'read' and user_acl != 'No DAC' and 'r' not in user_acl:
+            print("[" + str(datetime.datetime.now()) + "] " + "DAC violation attempt by " + username + " tried to " +
+                 operation + " " + filename + "\n")
+            return 1
+       
+
+        # If file doesn't exist and there is no path travesal attack
+        if (len(file_conf) == '' or len(file_integ) == ''):
+            print(print("[" + str(datetime.datetime.now()) + "] " + username + " tried to " +
+                 operation + " " + filename + " that doesn't exist.\n"))
+            return 1
 
         # Audit attack against mandatory access control
         if (operation == 'write'):
@@ -120,3 +149,33 @@ class Auditor :
                       + " on " + filename + " : Read attemp")
 
         return 1
+
+
+    def Revoke_Grant_Audit(self, source_user, permission, file_name, file_owner, target_user):
+        try:
+            file = open("Logs/DACCommands_Log.txt", 'a')
+        except FileNotFoundError:
+            file = open("Logs/DACCommands_Log.txt", 'w')
+
+        file.write(str(datetime.datetime.now()) + ";" + operation + ';' + source_user + ';' +
+                      target_user + ';' +
+                      permission + ';' +
+                     file_name + ';' + file_owner + ';\n')
+        file.close()
+
+        # Audit path traversal
+        if '\\' in filename or '/' in filename:
+            print("[" + str(datetime.datetime.now()) + "] " + "Path Traversal : " + username + " tried to " +
+                 operation + " " + filename + "\n")
+            return 1
+
+        # If file doesn't exist and there is no path travesal attack
+        if (len(file_owner) == ''):
+            print(print("[" + str(datetime.datetime.now()) + "] " + username + " tried to " +
+                 operation + " DAC permissions on/from " + filename + " that doesn't exist.\n"))
+            return 1
+
+        if (file_owner != source_user):
+             print("[" + str(datetime.datetime.now()) + "] " + username + ' attemp to change dac' + 
+                          + " on " + filename + " which is not the owner of")
+            
