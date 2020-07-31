@@ -1,15 +1,23 @@
 import os
-
+import Auditor
 class DACCommands():
-
-    def GrantAccess(self, source_user, arg):
+    def GrantAccess(self, source_user, arg, logger):
         permission = arg[0]
         filename = arg[1]
         target_user = arg[2] # The user gaining permission
+        try:
+            file = open("Files/" + filename, "r")
+            content = file.readlines()
+            file_owner = content[0].split(' ')[0]
+            file.close()
+        except FileNotFoundError:
+            file_owner = ''
+
+        logger.Revoke_Grant_Audit(source_user, permission, filename, file_owner, target_user)
 
         # Check for path traversal attack
         if '\\' in filename or '/' in filename:
-            return "Invalid file name\n"
+            return "Invalid file name"
         
         # Check for file existance
         if self._FileNameCheck(filename) == -1:
@@ -17,7 +25,7 @@ class DACCommands():
 
         # Check for target user existance
         if self._CheckUser(target_user) == -1:
-            return "Username doesn't exist\n"
+            return "Username doesn't exist"
         
         # Read file's content and extract it's 
         # ownership and access control list 
@@ -29,7 +37,7 @@ class DACCommands():
         
         # Check ownership
         if file_owner != source_user:
-            return "You can't grant access to this file because you are not the owner\n"
+            return "You can't grant access to this file because you are not the owner"
 
         # Create access permission rule
         new_permission = target_user + ':'
@@ -50,17 +58,28 @@ class DACCommands():
 
         # Update the ACL and write changes to the file
         self._UpdateAndWrite(access_list, target_user, new_permission, content, filename)
-        return "Permission(s) granted successfully\n"
+        return "Permission(s) granted successfully"
 
 
-    def RevokeAccess(self, source_user, arg):
+    def RevokeAccess(self, source_user, arg, logger):
         permission = arg[0]
         filename = arg[1]
         target_user = arg[2] # The user losing permissions
 
+        try:
+            file = open("Files/" + filename, "r")
+            content = file.readlines()
+            file_owner = content[0].split(' ')[0]
+            file.close()
+        except FileNotFoundError:
+            file_owner = ''
+
+        logger.Revoke_Grant_Audit(source_user, permission, filename, file_owner, target_user)
+
+
         # Check for path traversal attack
         if '\\' in filename or '/' in filename:
-            return "Invalid file name\n"
+            return "Invalid file name"
         
         # Check for file existance
         if self._FileNameCheck(filename) == -1:
@@ -68,7 +87,7 @@ class DACCommands():
 
         # Check for target user existance
         if self._CheckUser(target_user) == -1:
-            return "Username doesn't exist\n"
+            return "Username doesn't exist"
 
         # Read file's content and extract it's 
         # ownership and access control list 
@@ -80,12 +99,12 @@ class DACCommands():
         
         # Check ownership
         if file_owner != source_user:
-            return "You can't revoke permissions to this file because you are not the owner\n"
+            return "You can't revoke permissions to this file because you are not the owner"
 
         # Find user's access list index (position)
         user_access_index = access_list.find(target_user + ':')
         if (user_access_index == -1):
-            return "The user has no permissions to be revoked\n"
+            return "The user has no permissions to be revoked"
 
         # Find target's rwg permissions 
         target_user_acl = access_list[user_access_index + len(target_user) + 1: user_access_index + len(target_user) + 4]
@@ -109,7 +128,7 @@ class DACCommands():
 
         # Update the ACL and write changes to the file
         self._UpdateAndWrite(access_list, target_user, new_permission, content, filename)
-        return "Permission(s) revoked successfully\n"
+        return "Permission(s) revoked successfully"
 
 
     def _UpdateAndWrite(self, access_list, target_user, new_permission, content, filename):
