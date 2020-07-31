@@ -1,16 +1,35 @@
 import os
+import Auditor
 class Write:
-    def WriteToFile(self, username, args, user_conf, user_integ, Loger):
-        Loger.Read_Write_Auditor(username, self._normalize_level(user_conf), 
-                                 self._normalize_level(user_integ), 
-                                 self._normalize_level(filename),
-                                 self._normalize_level(file_conf), 
-                                 self._normalize_level(file_integ), 'write')
-                                 
+    def WriteToFile(self, username, args, user_conf, user_integ, Logger):
         filename = args[0]
+        # Log and audit the command before preventing attacks
+        try:
+            file = open("Files/" + filename)
+            file_owner, file_conf, file_integ = file.readline().split(' ')
+            file_acl = file.readline()
+            index = acl.find(username + ':')
+            if index == -1:
+                user_acl = 'No DAC'
+            else:
+                user_acl = acl[ index + len(username) + 1 : index + len(username) + 4]
+
+            file_conf = self._normalize_level(file_conf)
+            file_integ = self._normalize_level(file_integ.strip('\n'))
+        except FileNotFoundError:
+            file_conf = ''
+            file_integ = ''
+            user_acl = ''
+
+        Logger.Read_Write_Auditor(username, self._normalize_level(user_conf), 
+                                 self._normalize_level(user_integ),
+                                 filename,
+                                 file_conf, 
+                                 file_integ, user_acl,'write')
+                                
         # Check for path traversal attack
         if '\\' in filename or '/' in filename:
-            return "Invalid file name\n"
+            return "Invalid file name"
 
         content = args[1]
         if self._FileNameCheck(filename) == -1:
@@ -83,3 +102,8 @@ class Write:
             return "2" + level
         if (level == "Unclassified" or level == "Untrusted"):
             return "1" + level
+
+
+logger = Auditor.Auditor()
+x = Write()
+x.WriteToFile('hamid',['test.txt', 'attacked'],'TopSecret', 'SlightlyTrusted', logger)
