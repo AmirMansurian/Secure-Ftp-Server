@@ -1,15 +1,35 @@
 import os
+import Auditor
 class Read:
-    def ReadFromFile(self, username, filename, user_conf, user_integ, Loger):
-        Loger.Read_Write_Auditor(username, self._normalize_level(user_conf), 
-                                 self._normalize_level(user_integ), 
-                                 self._normalize_level(filename),
-                                 self._normalize_level(file_conf), 
-                                 self._normalize_level(file_integ), 'read')
+    def ReadFromFile(self, username, filename, user_conf, user_integ, Logger):
+        # Log and audit the command before preventing attacks
+        try:
+            file = open("Files/" + filename)
+            file_owner, file_conf, file_integ = file.readline().split(' ')
+            file_acl = file.readline()
+            index = acl.find(username + ':')
+            if index == -1:
+                user_acl = 'No DAC'
+            else:
+                user_acl = acl[ index + len(username) + 1 : index + len(username) + 4]
+
+            file_conf = self._normalize_level(file_conf)
+            file_integ = self._normalize_level(file_integ.strip('\n'))
+        except FileNotFoundError:
+            file_conf = ''
+            file_integ = ''
+            user_acl = ''
+
+        Logger.Read_Write_Auditor(username, self._normalize_level(user_conf), 
+                                 self._normalize_level(user_integ),
+                                 filename,
+                                 file_conf, 
+                                 file_integ, user_acl, 'read')
+
                                  
         # Check for path traversal attack
         if '\\' in filename or '/' in filename:
-            return "Invalid file name\n"
+            return "Invalid file name"
         
         if self._FileNameCheck(filename) == -1:
             return "File Not Found !!!\n"
@@ -76,4 +96,6 @@ class Read:
             return "2" + level
         if (level == "Unclassified" or level == "Untrusted"):
             return "1" + level
+
+
 
