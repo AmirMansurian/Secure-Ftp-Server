@@ -25,9 +25,7 @@ def __main__():
         enc_command = crypto_system.encrypt(command)
         sock.send(enc_command)
 
-        '''
         response = crypto_system.decrypt(sock.recv(4096))
-        '''
 
         # Increase session key lifetime and generate
         # a new one if needed at the end of this loop 
