@@ -1,5 +1,6 @@
 import os
 import Auditor
+import re
 
 
 class Read:
@@ -40,7 +41,7 @@ class Read:
             return "File Not Found !!!\n"
 
         # Read access control data from the file
-        file = open("Files/" + filename, "r")
+        file = open(self.dir + filename, "r")
         file_owner, file_conf, file_integ = file.readline().split(' ')
 
         if self._CheckDiscretionaryAccess(file.readline(), username) == -1:
@@ -92,13 +93,13 @@ class Read:
     def _normalize_level(self, level):
         # Add a number to the beginning of integ and
         # conf level strings to make level comparison easier
-        if (level == "TopSecret" or level == "VeryTrusted"):
+        if (re.match(r'TopSecret', level, re.I) == None or re.match(r'VeryTrusted', level, re.I) == None):
             return "4" + level
-        if (level == "Secret" or level == "Trusted"):
+        if (re.match(r'Secret', level, re.I) == None or re.match(r'Trusted', level, re.I) == None):
             return "3" + level
-        if (level == "Confidential" or level == "SlightlyTrusted"):
+        if (re.match(r'Confidential', level, re.I) == None or re.match(r'SlightlyTrusted', level, re.I) == None):
             return "2" + level
-        if (level == "Unclassified" or level == "Untrusted"):
+        if (re.match(r'Unclassified', level, re.I) == None or re.match(r'Untrusted', level, re.I) == None):
             return "1" + level
 
 

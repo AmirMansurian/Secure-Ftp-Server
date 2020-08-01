@@ -11,6 +11,7 @@ import Read
 import Write
 import DACCommands
 import Auditor
+from os import system
 
 KEY_THRESHOLD = 2
 
@@ -64,11 +65,11 @@ class Server:
         self.Crypto.key = self.SessionKeyGen.new_session()
 
         while 1:
-            print(self.Crypto.key)
-            Encrypted = self.Socket.recv(2048)
+           # print(self.Crypto.key)
+            Encrypted = self.Socket.recv(4096)
             Command = self.Crypto.decrypt(Encrypted)
 
-            print(Command)
+            #print(Command)
             if Command == -1:
                 self.Socket.sendall(self.Crypto.encrypt("Please try again !!!\n"))
 
@@ -207,8 +208,13 @@ class Server:
                     elif len(Sets) != 4:
                         self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
                     else:
-                        Response = self.Dac.GrantAccess(self.ConnectedUser, Sets[1:], self.Loger, self.IsHoneyPot)
+                        Response = self.Dac.RevokeAccess(self.ConnectedUser, Sets[1:], self.Loger, self.IsHoneyPot)
                         self.Socket.sendall(self.Crypto.encrypt(Response))
+
+                elif re.match(r'exit', Sets[0], re.I) != None:
+                    self.IsHoneyPot = 0
+                    self.ConnectedUser = ""
+                    self.Socket.sendall(self.Crypto.encrypt("Bye Bye !!!\n".encode()))
 
                 else:
                     self.Socket.sendall(self.Crypto.encrypt(Sets[0] + " is not a built-in command !!!\n"))

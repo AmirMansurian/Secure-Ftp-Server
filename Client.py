@@ -2,6 +2,7 @@ from Socket import ClientSocket
 from SessionKeyExchange import ClientSession
 from Cryptography import session_crypto
 
+
 KEY_THRESHOLD = 2
 
 def __main__():
@@ -20,7 +21,7 @@ def __main__():
     while True:
        # print('session key: ', crypto_system.key)
         command = input('Enter your command > ').strip()
-        
+
         # Encrypt and entered send command
         enc_command = crypto_system.encrypt(command)
         sock.send(enc_command)

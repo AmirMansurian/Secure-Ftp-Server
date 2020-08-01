@@ -83,8 +83,8 @@ class serverLogin:
                 LineNumber = LineNumber + 1
                 try:
                     usr,conf,integ,salt,hashedPass, tryNumber, Date = theSet.split(";")
-                    print(usr)
-                    print(username)
+                   # print(usr)
+                    #print(username)
                 except:
                     successLogin = 0  ## some thing was wrong
                     return successLogin, ""

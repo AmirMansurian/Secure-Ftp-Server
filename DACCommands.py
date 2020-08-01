@@ -1,6 +1,7 @@
 import os
 import Auditor
 class DACCommands():
+
     def GrantAccess(self, source_user, arg, logger, IsHoneyPot):
         if (IsHoneyPot == 1):
             self.dir = "Fake/Files/"
@@ -18,7 +19,7 @@ class DACCommands():
         except FileNotFoundError:
             file_owner = ''
 
-        logger.Revoke_Grant_Audit(source_user, permission, filename, file_owner, target_user, IsHoneyPot)
+        logger.Revoke_Grant_Audit(source_user, permission, filename, file_owner, target_user, "Grant", IsHoneyPot)
 
         # Check for path traversal attack
         if '\\' in filename or '/' in filename:
@@ -84,7 +85,7 @@ class DACCommands():
         except FileNotFoundError:
             file_owner = ''
 
-        logger.Revoke_Grant_Audit(source_user, permission, filename, file_owner, target_user, IsHoneyPot)
+        logger.Revoke_Grant_Audit(source_user, permission, filename, file_owner, target_user, "Revoke", IsHoneyPot)
 
 
         # Check for path traversal attack

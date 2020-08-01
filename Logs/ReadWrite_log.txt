@@ -1,1 +1,11 @@
 2020-08-01 09:58:49.772662;read;ali;TopSecret;VeryTrusted;test.txt;TopSecret;VeryTrusted;No DAC
+2020-08-01 12:08:50.263942;read;amirr;TopSecret;VeryTrusted;text2.txt;topsecret;verytrusted;No DAC
+2020-08-01 12:09:55.328143;read;amirr;TopSecret;VeryTrusted;test.txt;TopSecret;VeryTrusted;No DAC
+2020-08-01 12:10:58.577131;read;amirr;TopSecret;VeryTrusted;text2.txt;topsecret;verytrusted;No DAC
+2020-08-01 12:21:48.386254;read;ali;TopSecret;VeryTrusted;test.txt;TopSecret;VeryTrusted;No DAC
+2020-08-01 12:22:07.730984;read;ali;TopSecret;VeryTrusted;text2.txt;topsecret;verytrusted;No DAC
+2020-08-01 12:22:44.460072;read;ali;TopSecret;VeryTrusted;text2.txt;TopTecret;VeryTrusted;No DAC
+2020-08-01 12:23:20.599717;read;ali;TopSecret;VeryTrusted;text2.txt;TopSecret;VeryTrusted;No DAC
+2020-08-01 12:24:28.309495;write;ali;TopSecret;VeryTrusted;test2.txt;TopSecret;VeryTrusted;No DAC
+2020-08-01 12:24:33.132497;read;ali;TopSecret;VeryTrusted;test2.txt;TopSecret;VeryTrusted;No DAC
+2020-08-01 12:25:00.757365;read;ali;TopSecret;VeryTrusted;test2.txt;TopSecret;VeryTrusted;No DAC
