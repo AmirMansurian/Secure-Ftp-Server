@@ -75,14 +75,18 @@ class Auditor :
         return 1
 
 
-    def Read_Write_Auditor(self, username, user_conf, user_integ, filename, file_conf, file_integ, user_acl, operation):
+    def Read_Write_Auditor(self, username, user_conf, user_integ, filename, file_conf, file_integ, user_acl, operation, IsHoneyPot):
         # Log command
         # Log fromat:
         # Time;Operation;Username;UserConf;UserInteg;Filename;FileConf;FileInteg
+        if IsHoneyPot == 1:
+            logs_file = "Fake/Logs/ReadWrite_log.txt"
+        else:
+            logs_file = "Logs/ReadWrite_log.txt"
         try:
-            file = open("Logs/ReadWrite_log.txt", 'a')
+            file = open(logs_file, 'a')
         except FileNotFoundError:
-            file = open("Logs/ReadWrite_log.txt", 'w')
+            file = open(logs_file, 'w')
         if (len(file_conf) == 0 or len(file_integ) == 0):
             file.write(str(datetime.datetime.now()) + ";" + operation + ';' + username + ';' +
                       user_conf[1:] + ';' +
@@ -106,6 +110,12 @@ class Auditor :
                  operation + " " + filename + "\n")
             return 1
         
+        # If file doesn't exist and there is no path travesal attack
+        if (len(file_conf) == 0 or len(file_integ) == 0):
+            print(print("[" + str(datetime.datetime.now()) + "] " + username + " tried to " +
+                 operation + " " + filename + " that doesn't exist.\n"))
+            return 1
+        
         if operation == 'write' and user_acl != 'No DAC' and 'w' not in user_acl:
             print("[" + str(datetime.datetime.now()) + "] " + "DAC violation attempt by " + username + " tried to " +
                  operation + " " + filename + "\n")
@@ -115,13 +125,7 @@ class Auditor :
             print("[" + str(datetime.datetime.now()) + "] " + "DAC violation attempt by " + username + " tried to " +
                  operation + " " + filename + "\n")
             return 1
-       
-
-        # If file doesn't exist and there is no path travesal attack
-        if (len(file_conf) == '' or len(file_integ) == ''):
-            print(print("[" + str(datetime.datetime.now()) + "] " + username + " tried to " +
-                 operation + " " + filename + " that doesn't exist.\n"))
-            return 1
+      
 
         # Audit attack against mandatory access control
         if (operation == 'write'):
@@ -151,11 +155,16 @@ class Auditor :
         return 1
 
 
-    def Revoke_Grant_Audit(self, source_user, permission, file_name, file_owner, target_user):
+    def Revoke_Grant_Audit(self, source_user, permission, file_name, file_owner, target_user, IsHoneyPot):
+        if IsHoneyPot == 1:
+            logs_file = "Fake/Logs/DACCommands_Log.txt"
+        else:
+            logs_file = "Logs/DACCommands_Log.txt.txt"
+        
         try:
-            file = open("Logs/DACCommands_Log.txt", 'a')
+            file = open(logs_file, 'a')
         except FileNotFoundError:
-            file = open("Logs/DACCommands_Log.txt", 'w')
+            file = open(logs_file, 'w')
 
         file.write(str(datetime.datetime.now()) + ";" + operation + ';' + source_user + ';' +
                       target_user + ';' +
