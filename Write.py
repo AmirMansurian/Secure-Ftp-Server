@@ -1,18 +1,22 @@
 import os
 import Auditor
 class Write:
-    def WriteToFile(self, username, args, user_conf, user_integ, Logger):
+    def WriteToFile(self, username, args, user_conf, user_integ, Logger, IsHoneyPot):
+        if IsHoneyPot == 1:
+            self.dir = "Fake/Files/"
+        else:
+            self.dir = "Files/"
         filename = args[0]
         # Log and audit the command before preventing attacks
         try:
-            file = open("Files/" + filename)
+            file = open(self.dir + filename)
             file_owner, file_conf, file_integ = file.readline().split(' ')
             file_acl = file.readline()
-            index = acl.find(username + ':')
+            index = file_acl.find(username + ':')
             if index == -1:
                 user_acl = 'No DAC'
             else:
-                user_acl = acl[ index + len(username) + 1 : index + len(username) + 4]
+                user_acl = file_acl[ index + len(username) + 1 : index + len(username) + 4]
 
             file_conf = self._normalize_level(file_conf)
             file_integ = self._normalize_level(file_integ.strip('\n'))
@@ -25,7 +29,7 @@ class Write:
                                  self._normalize_level(user_integ),
                                  filename,
                                  file_conf, 
-                                 file_integ, user_acl,'write')
+                                 file_integ, user_acl,'write', IsHoneyPot)
                                 
         # Check for path traversal attack
         if '\\' in filename or '/' in filename:
@@ -36,7 +40,7 @@ class Write:
             return "File Not Found !!!\n"
 
         # Read access control data from the file
-        file = open("Files/" + filename, "r")
+        file = open(self.dir + filename, "r")
         file_header = file.readline()
         file_acl = file.readline()
         file_owner, file_conf, file_integ = file_header.split(' ')
@@ -50,7 +54,7 @@ class Write:
             return "Permission Denied!(By mandatory access control rules)\n"
 
         # Begin writing proccess
-        file = open("Files/" + filename, "w")
+        file = open(self.dir + filename, "w")
         content = [file_header, file_acl, content]
         file.writelines(content)
         file.close()
@@ -71,7 +75,7 @@ class Write:
     # Check file's existance
     def _FileNameCheck (self, FileName):
         IsValid = -1
-        dir = os.listdir('Files/')
+        dir = os.listdir(self.dir)
         for names in dir :
             if FileName == names :
                 IsValid = 1
@@ -102,8 +106,3 @@ class Write:
             return "2" + level
         if (level == "Unclassified" or level == "Untrusted"):
             return "1" + level
-
-
-logger = Auditor.Auditor()
-x = Write()
-x.WriteToFile('hamid',['test.txt', 'attacked'],'TopSecret', 'SlightlyTrusted', logger)
