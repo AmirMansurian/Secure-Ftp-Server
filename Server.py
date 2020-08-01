@@ -9,13 +9,14 @@ import Download
 import Upload
 import Read
 import Write
-
+import DACCommands
+import Auditor
 
 KEY_THRESHOLD = 2
 
 class Server :
 
-    def __init__(self, Socket, Crypto, Register, Login, Download, Upload, List, Read, Write, SessionKeyGen, Dac):
+    def __init__(self, Socket, Crypto, Register, Login, Download, Upload, List, Read, Write, SessionKeyGen, Dac, Loger):
 
         self.Socket = Socket
         self.Crypto = Crypto
@@ -27,6 +28,7 @@ class Server :
         self.Read = Read
         self.Write = Write
         self.Dac = Dac
+        self.Loger = Loger
         self.ConnectedUser = ""
         self.UserConf = ""
         self.UserInteg = ""
@@ -90,7 +92,7 @@ class Server :
                     if len(Sets) != 3 :
                         self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
                     else :
-                        Response = self.Login.Login(Sets[1], Sets[2], self.Crypto)
+                        Response = self.Login.Login(Sets[1], Sets[2], self.Crypto, self.Loger)
                         if Response == "Logged in successfully\n" :
                             self.SetConnectedUser(Sets[1])
                             self.Socket.sendall(self.Crypto.encrypt(Response))
@@ -112,7 +114,7 @@ class Server :
                         self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
                     else :
                         arg = ""
-                        if len(Sets == 2) :
+                        if len(Sets) == 2 :
                             arg = Sets[1]
                         Response = self.List.GetList(arg, self.ConnectedUser, self.UserConf, self.IsHoneyPot)
                         self.Socket.sendall(self.Crypto.encrypt(Response))
@@ -125,7 +127,7 @@ class Server :
                     elif len(Sets) != 4 :
                         self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
                     else :
-                        Response = self.Upload.PutFile(Sets[1:], self.ConnectedUser, self.IsHoneyPot)
+                        Response = self.Upload.PutFile(Sets[1:], self.ConnectedUser, self.Loger, self.IsHoneyPot)
                         self.Socket.sendall(self.Crypto.encrypt(Response))
 
                 elif re.match(r'get', Sets[0], re.I) != None :
@@ -136,7 +138,7 @@ class Server :
                     elif len(Sets) != 2 :
                         self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
                     else :
-                        Response = self.Download.GetFile(Sets[1], self.ConnectedUser, self.IsHoneyPot)
+                        Response = self.Download.GetFile(Sets[1], self.ConnectedUser, self.Loger,self.IsHoneyPot)
                         self.Socket.sendall(self.Crypto.encrypt(Response))
 
                 elif re.match(r'read', Sets[0], re.I) != None :
@@ -147,7 +149,8 @@ class Server :
                     elif len(Sets) != 2 :
                         self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
                     else :
-                        Response = self.Read.ReadFromFile(self.ConnectedUser, Sets[1], self.UserConf, self.UserInteg)
+                        Response = self.Read.ReadFromFile(self.ConnectedUser, Sets[1], self.UserConf, self.UserInteg, 
+                                                          self.Loger, self.IsHoneyPot)
                         self.Socket.sendall(self.Crypto.encrypt(Response))
 
                 elif re.match(r'write', Sets[0], re.I) != None :
@@ -162,7 +165,8 @@ class Server :
                         if len(Sets3) != 3 :
                             self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
                         else :
-                            Response = self.Write.WriteToFile(self.ConnectedUser, Sets3[1:], self.UserConf, self.UserInteg)
+                            Response = self.Write.WriteToFile(self.ConnectedUser, Sets3[1:], self.UserConf, self.UserInteg,
+                                                              self.Loger, self.IsHoneyPot)
                             self.Socket.sendall(self.Crypto.encrypt(Response))
 
                     elif len(Sets2) == 3 :
@@ -174,7 +178,8 @@ class Server :
                             temp = [""]*2
                             temp[0] = Sets3[1]
                             temp[1] = Sets2[1]
-                            Response = self.Write.WriteToFile(temp, self.UserConf, self.UserInteg)
+                            Response = self.Write.WriteToFile(temp, self.UserConf, self.UserInteg, self.UserInteg, 
+                                                              self.Loger, self.IsHoneyPot)
                             self.Socket.sendall(self.Crypto.encrypt(Response))
 
                 elif re.match(r'grant', Sets[0], re.I) != None :
@@ -185,7 +190,7 @@ class Server :
                     elif len(Sets) != 4 :
                         self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
                     else :
-                        Response = self.Dac.GrantAccess(self.ConnectedUser, Sets[1:])
+                        Response = self.Dac.GrantAccess(self.ConnectedUser, Sets[1:], self.Loger, self.IsHoneyPot)
 
                 elif re.match(r'revoke', Sets[0], re.I) != None :
 
@@ -195,7 +200,7 @@ class Server :
                     elif len(Sets) != 4 :
                         self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
                     else :
-                        Response = self.Dac.GrantAccess(self.ConnectedUser, Sets[1:])
+                        Response = self.Dac.GrantAccess(self.ConnectedUser, Sets[1:], self.Loger, self.IsHoneyPot)
 
                 else :
                     self.Socket.sendall(self.Crypto.encrypt(Sets[0] + " is not a built-in command !!!\n"))
@@ -213,7 +218,8 @@ def __main__():
     socket = Socket.ServerSocket()
     connection = socket.Socket()
     sr = Server(connection, Cryptography.session_crypto(None), Registery.Registery(), Login.serverLogin(),
-               Download.Download(), Upload.Upload(), List.List() ,Read.Read(), Write.Write(), SessionKeyExchange.ServerSession(None))
+               Download.Download(), Upload.Upload(), List.List() ,Read.Read(), Write.Write(), SessionKeyExchange.ServerSession(None),
+               DACCommands.DACCommands(),Auditor.Auditor())
     sr.Handler()
 
 __main__()
