@@ -1,19 +1,24 @@
 import os
 import Auditor
 class DACCommands():
-    def GrantAccess(self, source_user, arg, logger):
+    def GrantAccess(self, source_user, arg, logger, IsHoneyPot):
+        if (IsHoneyPot == 1):
+            self.dir = "Fake/Files/"
+        else:
+            self.dir = "Files/"
+        
         permission = arg[0]
         filename = arg[1]
         target_user = arg[2] # The user gaining permission
         try:
-            file = open("Files/" + filename, "r")
+            file = open(self.dir + filename, "r")
             content = file.readlines()
             file_owner = content[0].split(' ')[0]
             file.close()
         except FileNotFoundError:
             file_owner = ''
 
-        logger.Revoke_Grant_Audit(source_user, permission, filename, file_owner, target_user)
+        logger.Revoke_Grant_Audit(source_user, permission, filename, file_owner, target_user, IsHoneyPot)
 
         # Check for path traversal attack
         if '\\' in filename or '/' in filename:
@@ -29,7 +34,7 @@ class DACCommands():
         
         # Read file's content and extract it's 
         # ownership and access control list 
-        file = open("Files/" + filename, "r")
+        file = open(self.dir + filename, "r")
         content = file.readlines()
         file_owner = content[0].split(' ')[0]
         access_list = content[1]
@@ -61,20 +66,25 @@ class DACCommands():
         return "Permission(s) granted successfully"
 
 
-    def RevokeAccess(self, source_user, arg, logger):
+    def RevokeAccess(self, source_user, arg, logger, IsHoneyPot):
+        if (IsHoneyPot == 1):
+            self.dir = "Fake/Files/"
+        else:
+            self.dir = "Files/"
+
         permission = arg[0]
         filename = arg[1]
         target_user = arg[2] # The user losing permissions
 
         try:
-            file = open("Files/" + filename, "r")
+            file = open(self.dir + filename, "r")
             content = file.readlines()
             file_owner = content[0].split(' ')[0]
             file.close()
         except FileNotFoundError:
             file_owner = ''
 
-        logger.Revoke_Grant_Audit(source_user, permission, filename, file_owner, target_user)
+        logger.Revoke_Grant_Audit(source_user, permission, filename, file_owner, target_user, IsHoneyPot)
 
 
         # Check for path traversal attack
@@ -91,7 +101,7 @@ class DACCommands():
 
         # Read file's content and extract it's 
         # ownership and access control list 
-        file = open("Files/" + filename, "r")
+        file = open(self.dir + filename, "r")
         content = file.readlines()
         file_owner = content[0].split(' ')[0]
         access_list = content[1]
@@ -144,14 +154,14 @@ class DACCommands():
         content[1] = access_list
 
         # Write changes to the file
-        file = open("Files/" + filename, "w")
+        file = open(self.dir + filename, "w")
         file.writelines(content)
         file.close()
 
 
     def _FileNameCheck (self, FileName):
         IsValid = -1
-        dir = os.listdir('Files/')
+        dir = os.listdir(self.dir)
         for names in dir :
             if FileName == names :
                 IsValid = 1
