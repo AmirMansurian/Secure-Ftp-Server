@@ -18,7 +18,7 @@ def __main__():
     
     fresh_key = 0
     while True:
-        print('session key: ', crypto_system.key)
+       # print('session key: ', crypto_system.key)
         command = input('Enter your command > ').strip()
         
         # Encrypt and entered send command
@@ -26,6 +26,7 @@ def __main__():
         sock.send(enc_command)
 
         response = crypto_system.decrypt(sock.recv(4096))
+        print(response)
 
         # Increase session key lifetime and generate
         # a new one if needed at the end of this loop 

@@ -6,60 +6,50 @@ class Download :
 
         logger.Put_Get_Audit(Owner, FileName, "Get", IsHoneyPot)
 
+        path = ""
+        if IsHoneyPot == 0 :
+            self.dir = "Files/"
+        else :
+            self.dir = "Fake/Files/"
+
         # Check for path traversal attack
         if '\\' in FileName or '/' in FileName:
             return "Invalid file name\n"
 
-        if self.FileNameCheck(FileName, IsHoneyPot) == -1 :
+        if self.FileNameCheck(FileName) == -1 :
            return "File Not Found !!!\n"
 
-        if self.OwnerCheck(Owner, FileName, IsHoneyPot) == -1 :
+        if self.OwnerCheck(Owner, FileName) == -1 :
            return "Permission Denied !!!\n"
 
-        path = ""
-        if IsHoneyPot == 0:
-            file = open("Files/" + FileName, "r")
-            path = "Files/"
-        else :
-            file = open("Fake/Files/" + FileName, "r")
-            path = "Fake/Files/"
-
+        file = open(self.dir + FileName, "r")
         file_acl = file.readline()
         file_acl = file.readline()
         file.close()
         if self._CheckDiscretionaryAccess(file_acl, Owner) == -1:
             return "Permission Denied!(By discretionary access control rules)\n"
 
-        os.remove(path + FileName)
+        os.remove(self.dir + FileName)
 
-        return FileName + ".txt Removed from Server Successfully !!!\n"
+        return FileName + " Removed from Server Successfully !!!\n"
 
 
-    def FileNameCheck (self, FileName, IsHoneyPot) :
+    def FileNameCheck (self, FileName) :
+
         IsValid = -1
-        if IsHoneyPot == 0 :
-            dir = os.listdir('Files/')
-        else :
-            dir = os.listdir('Fake/Files/')
 
+        dir = os.listdir(self.dir)
         for names in dir :
             if FileName == names :
                 IsValid = 1
         return IsValid
 
-    def OwnerCheck (self, Owner, FileName, IsHoneyPot) :
+    def OwnerCheck (self, Owner, FileName) :
 
-        path = ""
-        if IsHoneyPot == 0 :
-            dir = os.listdir('Files/')
-            path = "Files/"
-        else :
-            dir = os.listdir('Fake/Files/')
-            path = "Fake/Files/"
-
+        dir = os.listdir(self.dir)
         for names in dir:
             if FileName == names :
-                File = open(path + names, "r")
+                File = open(self.dir + names, "r")
                 line = File.readline()
                 set = line.split(" ")
                 if set[0] == Owner :

@@ -78,7 +78,6 @@ class serverLogin:
         LineNumber = 0;
         with open("Users.txt", "r") as file:
             lines = file.readlines()
-            print(lines)
 
             for theSet in lines :
                 LineNumber = LineNumber + 1
@@ -100,5 +99,6 @@ class serverLogin:
                         successLogin = 2 ##incorrect password
                         return successLogin, LineNumber
 
-        return 1
 
+        successLogin = 0  ## some thing was wrong
+        return successLogin, ""

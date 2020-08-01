@@ -14,7 +14,8 @@ import Auditor
 
 KEY_THRESHOLD = 2
 
-class Server :
+
+class Server:
 
     def __init__(self, Socket, Crypto, Register, Login, Download, Upload, List, Read, Write, SessionKeyGen, Dac, Loger):
 
@@ -35,14 +36,12 @@ class Server :
         self.IsHoneyPot = 0
         self.SessionKeyGen = SessionKeyGen
         self.fresh_key = 0
-        
+
         # Key exchange class initilization
-        # for session key generation. 
+        # for session key generation.
         self.SessionKeyGen.sock = self.Socket
 
-        
-
-    def SetConnectedUser (self, Username) :
+    def SetConnectedUser(self, Username):
 
         self.ConnectedUser = Username
         File = open("Users.txt", "r")
@@ -59,41 +58,39 @@ class Server :
 
         File.close()
 
-
-
-    def Handler (self) :
+    def Handler(self):
 
         # Generating first session key
         self.Crypto.key = self.SessionKeyGen.new_session()
 
-        while 1 :
+        while 1:
             print(self.Crypto.key)
             Encrypted = self.Socket.recv(2048)
             Command = self.Crypto.decrypt(Encrypted)
 
             print(Command)
-            if Command == -1 :
+            if Command == -1:
                 self.Socket.sendall(self.Crypto.encrypt("Please try again !!!\n"))
 
-            else :
+            else:
 
                 Sets = Command.split(" ")
 
-                if re.match(r'register', Sets[0], re.I) != None :
+                if re.match(r'register', Sets[0], re.I) != None:
 
-                    if len(Sets) != 5 :
+                    if len(Sets) != 5:
                         self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
-                    else :
+                    else:
                         Response = self.Register.Registeration(Sets[1:], self.Crypto)
                         self.Socket.sendall(self.Crypto.encrypt(Response))
 
-                elif re.match(r'login', Sets[0], re.I) != None :
+                elif re.match(r'login', Sets[0], re.I) != None:
 
-                    if len(Sets) != 3 :
+                    if len(Sets) != 3:
                         self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
-                    else :
+                    else:
                         Response = self.Login.Login(Sets[1], Sets[2], self.Crypto, self.Loger)
-                        if Response == "Logged in successfully\n" :
+                        if Response == "Logged in successfully\n":
                             self.SetConnectedUser(Sets[1])
                             self.Socket.sendall(self.Crypto.encrypt(Response))
 
@@ -102,107 +99,118 @@ class Server :
                             self.IsHoneyPot = 1
                             self.SetConnectedUser(Sets[1])
 
-                        else :
+                        else:
                             self.Socket.sendall(self.Crypto.encrypt(Response))
 
-                elif re.match(r'list', Sets[0], re.I) != None :
+                elif re.match(r'list', Sets[0], re.I) != None:
 
-                    if self.ConnectedUser == "" :
-                        self.Socket.sendall(self.Crypto.encrypt("You should Login/Signin first (use Register/Login command) !!!\n"))
+                    if self.ConnectedUser == "":
+                        self.Socket.sendall(
+                            self.Crypto.encrypt("You should Login/Signin first (use Register/Login command) !!!\n"))
 
-                    elif len(Sets) > 2 :
+                    elif len(Sets) > 2:
                         self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
-                    else :
+                    else:
                         arg = ""
-                        if len(Sets) == 2 :
+                        if len(Sets) == 2:
                             arg = Sets[1]
                         Response = self.List.GetList(arg, self.ConnectedUser, self.UserConf, self.IsHoneyPot)
                         self.Socket.sendall(self.Crypto.encrypt(Response))
 
-                elif re.match(r'put', Sets[0], re.I) != None :
+                elif re.match(r'put', Sets[0], re.I) != None:
 
-                    if self.ConnectedUser == "" :
-                        self.Socket.sendall(self.Crypto.encrypt("You should Login/Signin first (use Register/Login command) !!!\n"))
+                    if self.ConnectedUser == "":
+                        self.Socket.sendall(
+                            self.Crypto.encrypt("You should Login/Signin first (use Register/Login command) !!!\n"))
 
-                    elif len(Sets) != 4 :
+                    elif len(Sets) != 4:
                         self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
-                    else :
+                    else:
                         Response = self.Upload.PutFile(Sets[1:], self.ConnectedUser, self.Loger, self.IsHoneyPot)
                         self.Socket.sendall(self.Crypto.encrypt(Response))
 
-                elif re.match(r'get', Sets[0], re.I) != None :
+                elif re.match(r'get', Sets[0], re.I) != None:
 
-                    if self.ConnectedUser == "" :
-                        self.Socket.sendall(self.Crypto.encrypt("You should Login/Signin first (use Register/Login command) !!!\n"))
+                    if self.ConnectedUser == "":
+                        self.Socket.sendall(
+                            self.Crypto.encrypt("You should Login/Signin first (use Register/Login command) !!!\n"))
 
-                    elif len(Sets) != 2 :
+                    elif len(Sets) != 2:
                         self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
-                    else :
-                        Response = self.Download.GetFile(Sets[1], self.ConnectedUser, self.Loger,self.IsHoneyPot)
+                    else:
+                        Response = self.Download.GetFile(Sets[1], self.ConnectedUser, self.Loger, self.IsHoneyPot)
                         self.Socket.sendall(self.Crypto.encrypt(Response))
 
-                elif re.match(r'read', Sets[0], re.I) != None :
+                elif re.match(r'read', Sets[0], re.I) != None:
 
-                    if self.ConnectedUser == "" :
-                        self.Socket.sendall(self.Crypto.encrypt("You should Login/Signin first (use Register/Login command) !!!\n"))
+                    if self.ConnectedUser == "":
+                        self.Socket.sendall(
+                            self.Crypto.encrypt("You should Login/Signin first (use Register/Login command) !!!\n"))
 
-                    elif len(Sets) != 2 :
+                    elif len(Sets) != 2:
                         self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
-                    else :
-                        Response = self.Read.ReadFromFile(self.ConnectedUser, Sets[1], self.UserConf, self.UserInteg, 
+                    else:
+                        Response = self.Read.ReadFromFile(self.ConnectedUser, Sets[1], self.UserConf, self.UserInteg,
                                                           self.Loger, self.IsHoneyPot)
                         self.Socket.sendall(self.Crypto.encrypt(Response))
 
-                elif re.match(r'write', Sets[0], re.I) != None :
+                elif re.match(r'write', Sets[0], re.I) != None:
 
                     Sets2 = Command.split("\"")
-                    if self.ConnectedUser == "" :
-                        self.Socket.sendall(self.Crypto.encrypt("You should Login/Signin first (use Register/Login command) !!!\n"))
+                    if self.ConnectedUser == "":
+                        self.Socket.sendall(
+                            self.Crypto.encrypt("You should Login/Signin first (use Register/Login command) !!!\n"))
 
-                    elif len(Sets2) == 1 :
+                    elif len(Sets2) == 1:
 
                         Sets3 = Sets2[0].split(" ")
-                        if len(Sets3) != 3 :
+                        if len(Sets3) != 3:
                             self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
-                        else :
-                            Response = self.Write.WriteToFile(self.ConnectedUser, Sets3[1:], self.UserConf, self.UserInteg,
+                        else:
+                            Response = self.Write.WriteToFile(self.ConnectedUser, Sets3[1:], self.UserConf,
+                                                              self.UserInteg,
                                                               self.Loger, self.IsHoneyPot)
                             self.Socket.sendall(self.Crypto.encrypt(Response))
 
-                    elif len(Sets2) == 3 :
+                    elif len(Sets2) == 3:
 
                         Sets3 = Sets2[0].split(" ")
-                        if len(Sets3) != 2 :
+                        if len(Sets3) != 3:
                             self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
-                        else :
-                            temp = [""]*2
+                        else:
+                            temp = [""] * 2
                             temp[0] = Sets3[1]
                             temp[1] = Sets2[1]
-                            Response = self.Write.WriteToFile(temp, self.UserConf, self.UserInteg, self.UserInteg, 
+                            print(temp[0], temp[1])
+                            Response = self.Write.WriteToFile(self.ConnectedUser, temp, self.UserConf, self.UserInteg,
                                                               self.Loger, self.IsHoneyPot)
                             self.Socket.sendall(self.Crypto.encrypt(Response))
 
-                elif re.match(r'grant', Sets[0], re.I) != None :
+                elif re.match(r'grant', Sets[0], re.I) != None:
 
-                    if self.ConnectedUser == "" :
-                        self.Socket.sendall(self.Crypto.encrypt("You should Login/Signin first (use Register/Login command) !!!\n"))
+                    if self.ConnectedUser == "":
+                        self.Socket.sendall(
+                            self.Crypto.encrypt("You should Login/Signin first (use Register/Login command) !!!\n"))
 
-                    elif len(Sets) != 4 :
+                    elif len(Sets) != 4:
                         self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
-                    else :
+                    else:
                         Response = self.Dac.GrantAccess(self.ConnectedUser, Sets[1:], self.Loger, self.IsHoneyPot)
+                        self.Socket.sendall(self.Crypto.encrypt(Response))
 
-                elif re.match(r'revoke', Sets[0], re.I) != None :
+                elif re.match(r'revoke', Sets[0], re.I) != None:
 
-                    if self.ConnectedUser == "" :
-                        self.Socket.sendall(self.Crypto.encrypt("You should Login/Signin first (use Register/Login command) !!!\n"))
+                    if self.ConnectedUser == "":
+                        self.Socket.sendall(
+                            self.Crypto.encrypt("You should Login/Signin first (use Register/Login command) !!!\n"))
 
-                    elif len(Sets) != 4 :
+                    elif len(Sets) != 4:
                         self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
-                    else :
+                    else:
                         Response = self.Dac.GrantAccess(self.ConnectedUser, Sets[1:], self.Loger, self.IsHoneyPot)
+                        self.Socket.sendall(self.Crypto.encrypt(Response))
 
-                else :
+                else:
                     self.Socket.sendall(self.Crypto.encrypt(Sets[0] + " is not a built-in command !!!\n"))
 
             # Increase session key lifetime and generate
@@ -213,13 +221,14 @@ class Server :
                 self.Crypto.key = self.SessionKeyGen.key_freshness()
 
 
-
 def __main__():
     socket = Socket.ServerSocket()
     connection = socket.Socket()
     sr = Server(connection, Cryptography.session_crypto(None), Registery.Registery(), Login.serverLogin(),
-               Download.Download(), Upload.Upload(), List.List() ,Read.Read(), Write.Write(), SessionKeyExchange.ServerSession(None),
-               DACCommands.DACCommands(),Auditor.Auditor())
+                Download.Download(), Upload.Upload(), List.List(), Read.Read(), Write.Write(),
+                SessionKeyExchange.ServerSession(None),
+                DACCommands.DACCommands(), Auditor.Auditor())
     sr.Handler()
+
 
 __main__()

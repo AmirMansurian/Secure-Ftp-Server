@@ -1,5 +1,7 @@
 import os
 import Auditor
+
+
 class Write:
     def WriteToFile(self, username, args, user_conf, user_integ, Logger, IsHoneyPot):
         if IsHoneyPot == 1:
@@ -16,7 +18,7 @@ class Write:
             if index == -1:
                 user_acl = 'No DAC'
             else:
-                user_acl = file_acl[ index + len(username) + 1 : index + len(username) + 4]
+                user_acl = file_acl[index + len(username) + 1: index + len(username) + 4]
 
             file_conf = self._normalize_level(file_conf)
             file_integ = self._normalize_level(file_integ.strip('\n'))
@@ -25,12 +27,12 @@ class Write:
             file_integ = ''
             user_acl = ''
 
-        Logger.Read_Write_Auditor(username, self._normalize_level(user_conf), 
-                                 self._normalize_level(user_integ),
-                                 filename,
-                                 file_conf, 
-                                 file_integ, user_acl,'write', IsHoneyPot)
-                                
+        Logger.Read_Write_Auditor(username, self._normalize_level(user_conf),
+                                  self._normalize_level(user_integ),
+                                  filename,
+                                  file_conf,
+                                  file_integ, user_acl, 'write', IsHoneyPot)
+
         # Check for path traversal attack
         if '\\' in filename or '/' in filename:
             return "Invalid file name"
@@ -60,27 +62,24 @@ class Write:
         file.close()
         return "Writing on " + filename + " finished successfully."
 
-
     def _CheckDiscretionaryAccess(self, acl, username):
         index = acl.find(username + ':')
         if index == -1:
             return 1
 
-        user_acl = acl[ index + len(username) + 1 : index + len(username) + 4]
+        user_acl = acl[index + len(username) + 1: index + len(username) + 4]
         if 'w' in user_acl:
             return 1
         return -1
 
-
     # Check file's existance
-    def _FileNameCheck (self, FileName):
+    def _FileNameCheck(self, FileName):
         IsValid = -1
         dir = os.listdir(self.dir)
-        for names in dir :
-            if FileName == names :
+        for names in dir:
+            if FileName == names:
                 IsValid = 1
         return IsValid
-
 
     def _CheckMandatoryAccess(self, user_conf, user_integ, file_conf, file_integ):
         # add a number to the beginning of level string
@@ -93,7 +92,6 @@ class Write:
             return 1
         else:
             return -1
-
 
     def _normalize_level(self, level):
         # Add a number to the beginning of integ and 

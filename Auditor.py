@@ -32,9 +32,8 @@ class Auditor :
 
             print("[" + str(datetime.datetime.now()) + "] " + "User " + Username + " Entered HoneyPot Mode(Check for actions in Fake/Logs/) !!!\n")
             File = open("Logs/Auth_log.txt", "a")
-            File.write(str(datetime.datetime.now()) + ";" + Username + ";login\n")
+            File.write(str(datetime.datetime.now()) + ";" + Username + ";HoneyPot\n")
             File.close()
-
 
 
     def Put_Get_Audit (self, Owner, FileName, Operation, IsHoneyPot) :
@@ -154,37 +153,37 @@ class Auditor :
 
         return 1
 
-
-    def Revoke_Grant_Audit(self, source_user, permission, file_name, file_owner, target_user, IsHoneyPot):
+    def Revoke_Grant_Audit(self, source_user, permission, file_name, file_owner, target_user, operation, IsHoneyPot):
         if IsHoneyPot == 1:
             logs_file = "Fake/Logs/DACCommands_Log.txt"
         else:
             logs_file = "Logs/DACCommands_Log.txt.txt"
-        
+
         try:
             file = open(logs_file, 'a')
         except FileNotFoundError:
             file = open(logs_file, 'w')
 
         file.write(str(datetime.datetime.now()) + ";" + operation + ';' + source_user + ';' +
-                      target_user + ';' +
-                      permission + ';' +
-                     file_name + ';' + file_owner + ';\n')
+                   target_user + ';' +
+                   permission + ';' +
+                   file_name + ';' + file_owner + ';\n')
         file.close()
 
         # Audit path traversal
-        if '\\' in filename or '/' in filename:
-            print("[" + str(datetime.datetime.now()) + "] " + "Path Traversal : " + username + " tried to " +
-                 operation + " " + filename + "\n")
+        if '\\' in file_name or '/' in file_name:
+            print("[" + str(datetime.datetime.now()) + "] " + "Path Traversal : " + source_user + " tried to " +
+                  operation + " " + file_name + "\n")
             return 1
 
         # If file doesn't exist and there is no path travesal attack
         if (len(file_owner) == ''):
-            print(print("[" + str(datetime.datetime.now()) + "] " + username + " tried to " +
-                 operation + " DAC permissions on/from " + filename + " that doesn't exist.\n"))
+            print(print("[" + str(datetime.datetime.now()) + "] " + source_user + " tried to " +
+                        operation + " DAC permissions on/from " + file_name + " that doesn't exist.\n"))
             return 1
 
         if (file_owner != source_user):
-             print("[" + str(datetime.datetime.now()) + "] " + username + ' attemp to change dac' + 
-                          + " on " + filename + " which is not the owner of")
+            print("[" + str(datetime.datetime.now()) + "] " + source_user + ' attemp to change dac'
+                  + " on " + file_name + " which is not the owner of")
+        return 1
             

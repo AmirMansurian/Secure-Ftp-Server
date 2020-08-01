@@ -6,23 +6,22 @@ class List :
 
         path =""
         if IsHoneyPot == 0 :
-            dir = os.listdir('Files/')
-            path = "Files/"
+            self.dir = "Files/"
         else :
-            dir = os.listdir('Fake/Files/')
-            path = "Fake/Files/"
+            self.dir = "Fake/Files/"
 
+        dir = os.listdir(self.dir)
         Result = ""
 
         for file in dir :
 
-            File = open(path + file, "r")
+            File = open(self.dir + file, "r")
             line = File.readline()
             if not line:
                 break
 
             set = line.split(" ")
-            if int((self._normalize_level(ConfLevel)[0]) >= int(self._normalize_level(set[1])[0])) or Username == set[0] :
+            if int((self._normalize_level(ConfLevel)[0]) >= self._normalize_level(set[1])[0]) or Username == set[0] :
                 if arg in file :
                     Result += file + "      " + set[0] + "/" + set[1] + "/" + set[2] + "\n"
             File.close()

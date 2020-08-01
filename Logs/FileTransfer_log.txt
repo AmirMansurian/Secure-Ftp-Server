@@ -106,3 +106,9 @@
 2020-07-28 14:00:31.043758;ali;tried to;Put;test.txt;
 2020-07-28 14:00:31.943332;ali;tried to;Put;test.txt;
 2020-07-28 15:04:06.321355;ali;tried to;Put;test.txt;
+2020-08-01 09:58:59.211601;ali;tried to;Get;test.txt;
+2020-08-01 09:59:32.764614;ali;tried to;Put;test.txt;
+2020-08-01 09:59:42.172416;ali;tried to;Put;test2.txt;
+2020-08-01 09:59:59.181012;ali;tried to;Put;test2.txt;
+2020-08-01 10:00:18.197325;ali;tried to;Put;test2.txt;
+2020-08-01 10:00:26.237242;ali;tried to;Get;test2.txt;
