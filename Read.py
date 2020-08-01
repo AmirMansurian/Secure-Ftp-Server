@@ -1,17 +1,21 @@
 import os
 import Auditor
 class Read:
-    def ReadFromFile(self, username, filename, user_conf, user_integ, Logger):
+    def ReadFromFile(self, username, filename, user_conf, user_integ, Logger, IsHoneyPot):
         # Log and audit the command before preventing attacks
+        if (IsHoneyPot == 1):
+            self.dir = "Fake/Files/"
+        else:
+            self.dir = "Files/"
         try:
-            file = open("Files/" + filename)
+            file = open(self.dir + filename)
             file_owner, file_conf, file_integ = file.readline().split(' ')
             file_acl = file.readline()
-            index = acl.find(username + ':')
+            index = file_acl.find(username + ':')
             if index == -1:
                 user_acl = 'No DAC'
             else:
-                user_acl = acl[ index + len(username) + 1 : index + len(username) + 4]
+                user_acl = file_acl[ index + len(username) + 1 : index + len(username) + 4]
 
             file_conf = self._normalize_level(file_conf)
             file_integ = self._normalize_level(file_integ.strip('\n'))
@@ -24,7 +28,7 @@ class Read:
                                  self._normalize_level(user_integ),
                                  filename,
                                  file_conf, 
-                                 file_integ, user_acl, 'read')
+                                 file_integ, user_acl, 'read', IsHoneyPot)
 
                                  
         # Check for path traversal attack
@@ -48,10 +52,10 @@ class Read:
             return "Permission Denied!(By mandatory access control rules)\n"
 
         # Begin read proccess
-        file = open("Files/" + filename, "r")
+        file = open(self.dir + filename, "r")
         fileContent = file.readlines()
         file.close()
-        return fileContent[2:]
+        return ''.join(fileContent[2:])
 
 
     def _CheckDiscretionaryAccess(self, acl, username):
@@ -67,7 +71,7 @@ class Read:
     # Check file's existance
     def _FileNameCheck (self, FileName):
         IsValid = -1
-        dir = os.listdir('Files/')
+        dir = os.listdir(self.dir)
         for names in dir :
             if FileName == names :
                 IsValid = 1
