@@ -11,6 +11,7 @@ import Read
 import Write
 import DACCommands
 import Auditor
+import os
 from os import system
 
 KEY_THRESHOLD = 2
@@ -227,7 +228,45 @@ class Server:
                 self.Crypto.key = self.SessionKeyGen.key_freshness()
 
 
+def check_files_and_folders():
+        if not os.path.exists('Files'):
+            os.makedirs('Files')
+        if not os.path.exists('Logs'):
+            os.makedirs('Logs')
+        if not os.path.exists('Fake'):
+            os.makedirs('Fake')
+        if not os.path.exists('Fake/Logs'):
+            os.makedirs('Fake/Logs')
+        if not os.path.exists('Fake/Files'):
+            os.makedirs('Fake/Files')
+        
+        try:
+            file = open('Logs/Auth_log.txt', 'r')
+        except FileNotFoundError:
+            file = open('Logs/Auth_log.txt', 'w')
+        file.close()
+
+        try:
+            file = open('Logs/FileTransfer_log.txt', 'r')
+        except FileNotFoundError:
+            file = open('Logs/FileTransfer_log.txt', 'w')
+        file.close()
+
+        try:
+            file = open('Fake/Logs/FileTransfer_log.txt', 'r')
+        except FileNotFoundError:
+            file = open('Fake/Logs/FileTransfer_log.txt', 'w')
+        file.close()
+
+        try:
+            file = open('Users.txt', 'r')
+        except FileNotFoundError:
+            file = open('Users.txt', 'w')
+        file.close()
+
+
 def __main__():
+    check_files_and_folders()
     socket = Socket.ServerSocket()
     connection = socket.Socket()
     sr = Server(connection, Cryptography.session_crypto(None), Registery.Registery(), Login.serverLogin(),
