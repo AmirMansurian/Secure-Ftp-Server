@@ -59,7 +59,7 @@ class Upload :
         for line in Line :
             set = line.split(";")
             if set[0] == Owner :
-                if self._normalize_level(set[2]) >= IntegLevel :
+                if self._normalize_level(set[2]) >= self._normalize_level(IntegLevel) :
                     return 1
                 else :
                     return -1
