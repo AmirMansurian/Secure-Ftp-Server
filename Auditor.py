@@ -153,6 +153,7 @@ class Auditor :
 
         return 1
 
+
     def Revoke_Grant_Audit(self, source_user, permission, file_name, file_owner, target_user, operation, IsHoneyPot):
         if IsHoneyPot == 1:
             logs_file = "Fake/Logs/DACCommands_Log.txt"
