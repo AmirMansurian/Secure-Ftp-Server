@@ -22,6 +22,9 @@ class List :
                 break
 
             set = line.split(" ")
+            print(Username)
+            print(self._normalize_level(ConfLevel)[0])
+            print(self._normalize_level(set[1])[0])
             if (self._normalize_level(ConfLevel)[0] >= self._normalize_level(set[1])[0]) or Username == set[0] :
                 if arg in file :
                     Result += file + "      " + set[0] + "/" + set[1] + "/" + set[2] + "\n"

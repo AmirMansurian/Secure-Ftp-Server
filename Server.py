@@ -80,6 +80,7 @@ class Server:
 
                 if re.match(r'register', Sets[0], re.I) != None:
 
+
                     if len(Sets) != 5:
                         self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments (Use Help Command)\n"))
                     else:
