@@ -134,26 +134,26 @@ class Auditor :
 
         # Audit attack against mandatory access control
         if (operation == 'write'):
-            if (user_conf > file_conf):
-                if (user_integ < file_integ):
+            if (user_conf[0] > file_conf[0]):
+                if (user_integ[0] < file_integ[0]):
                     print("[" + str(datetime.datetime.now()) + "] " + "Confidentiality and integrity violation attempt by " 
                           + username + " on " + filename + " : Write attemp")
                 else:
                     print("[" + str(datetime.datetime.now()) + "] " + "Confidentiality violation attempt by " 
                           + username + " on " + filename + " : Write attemp")
-            elif (user_integ < file_integ):
+            elif (user_integ[0] < file_integ[0]):
                 print("[" + str(datetime.datetime.now()) + "] " + "Integrity violation attempt by " +
                      username + " on " + filename + " : Write attemp")
 
         elif (operation == 'read'):
-            if (user_conf < file_conf):
-                if (user_integ > file_integ):
+            if (user_conf[0] < file_conf[0]):
+                if (user_integ[0] > file_integ[0]):
                     print("[" + str(datetime.datetime.now()) + "] " + "Confidentiality and integrity violation attempt by " + username 
                     + " on " + filename + " : Read attemp")
                 else:
                     print("[" + str(datetime.datetime.now()) + "] " + "Confidentiality violation attempt by " + username 
                           + " on " + filename + " : Read attemp")
-            elif (user_integ > file_integ):
+            elif (user_integ[0] > file_integ[0]):
                 print("[" + str(datetime.datetime.now()) + "] " + "Integrity violation attempt by " + username 
                       + " on " + filename + " : Read attemp")
 

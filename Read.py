@@ -95,7 +95,7 @@ class Read:
         file_conf = self._normalize_level(file_conf)
         file_integ = self._normalize_level(file_integ)
 
-        if (user_conf >= file_conf and user_integ <= file_integ):
+        if (user_conf[0] >= file_conf[0] and user_integ[0] <= file_integ[0]):
             return 1
         else:
             return -1
@@ -103,13 +103,13 @@ class Read:
     def _normalize_level(self, level):
         # Add a number to the beginning of integ and
         # conf level strings to make level comparison easier
-        if (re.match(r'TopSecret', level, re.I) == None or re.match(r'VeryTrusted', level, re.I) == None):
+        if (re.match(r'TopSecret', level, re.I) != None or re.match(r'VeryTrusted', level, re.I) != None):
             return "4" + level
-        if (re.match(r'Secret', level, re.I) == None or re.match(r'Trusted', level, re.I) == None):
+        if (re.match(r'Secret', level, re.I) != None or re.match(r'Trusted', level, re.I) != None):
             return "3" + level
-        if (re.match(r'Confidential', level, re.I) == None or re.match(r'SlightlyTrusted', level, re.I) == None):
+        if (re.match(r'Confidential', level, re.I) != None or re.match(r'SlightlyTrusted', level, re.I) != None):
             return "2" + level
-        if (re.match(r'Unclassified', level, re.I) == None or re.match(r'Untrusted', level, re.I) == None):
+        if (re.match(r'Unclassified', level, re.I) != None or re.match(r'Untrusted', level, re.I) != None):
             return "1" + level
 
 
