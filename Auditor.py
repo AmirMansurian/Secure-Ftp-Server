@@ -125,6 +125,12 @@ class Auditor :
                  operation + " " + filename + "\n")
             return 1
       
+        # If DAC is set for the file and the user has the appropriate
+        # right, then there is no violation
+        if operation == 'read' and 'r' in user_acl:
+            return 1
+        elif operation == 'write' and 'w' in user_acl:
+            return 1
 
         # Audit attack against mandatory access control
         if (operation == 'write'):

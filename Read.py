@@ -44,8 +44,18 @@ class Read:
         file = open(self.dir + filename, "r")
         file_owner, file_conf, file_integ = file.readline().split(' ')
 
-        if self._CheckDiscretionaryAccess(file.readline(), username) == -1:
+        # 0 = no DAC, 1 = has the right, -1 = dosn't have the right
+        DAC = self._CheckDiscretionaryAccess(file.readline(), username)
+        if  DAC == -1:
             return "Permission Denied!(By discretionary access control rules)\n"
+        elif DAC == 1:
+            file.close()
+            # Begin read proccess
+            file = open(self.dir + filename, "r")
+            fileContent = file.readlines()
+            file.close()
+            return ''.join(fileContent[2:])
+
         # Remove \n from file_integ string
         file_integ = file_integ[:-1]
         file.close()
@@ -62,7 +72,7 @@ class Read:
     def _CheckDiscretionaryAccess(self, acl, username):
         index = acl.find(username + ':')
         if index == -1:
-            return 1
+            return 0
 
         user_acl = acl[index + len(username) + 1: index + len(username) + 4]
         if 'r' in user_acl:

@@ -46,8 +46,20 @@ class Write:
         file_header = file.readline()
         file_acl = file.readline()
         file_owner, file_conf, file_integ = file_header.split(' ')
-        if self._CheckDiscretionaryAccess(file_acl, username) == -1:
+
+        # 0 = no DAC, 1 = has the right, -1 = doesn't have the right
+        DAC = self._CheckDiscretionaryAccess(file_acl, username)
+        if DAC == -1:
             return "Permission Denied!(By discretionary access control rules)\n"
+        elif DAC == 1:
+            file.close()
+            # Begin writing proccess
+            file = open(self.dir + filename, "w")
+            content = [file_header, file_acl, content]
+            file.writelines(content)
+            file.close()
+            return "Writing on " + filename + " finished successfully."
+
         # Remove \n from file_integ string
         file_integ = file_integ[:-1]
         file.close()
@@ -65,7 +77,7 @@ class Write:
     def _CheckDiscretionaryAccess(self, acl, username):
         index = acl.find(username + ':')
         if index == -1:
-            return 1
+            return 0
 
         user_acl = acl[index + len(username) + 1: index + len(username) + 4]
         if 'w' in user_acl:
