@@ -9,3 +9,5 @@
 2020-08-01 12:24:28.309495;write;ali;TopSecret;VeryTrusted;test2.txt;TopSecret;VeryTrusted;No DAC
 2020-08-01 12:24:33.132497;read;ali;TopSecret;VeryTrusted;test2.txt;TopSecret;VeryTrusted;No DAC
 2020-08-01 12:25:00.757365;read;ali;TopSecret;VeryTrusted;test2.txt;TopSecret;VeryTrusted;No DAC
+2020-08-03 07:39:44.863662;read;amir;topsecret;verytrusted;test.txt;TopSecret;VeryTrusted;No DAC
+2020-08-03 07:41:58.243516;read;ali;TopSecret;VeryTrusted;amir.txt;topsecret;verytrusted;rwg

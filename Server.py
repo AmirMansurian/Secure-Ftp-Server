@@ -81,7 +81,7 @@ class Server:
                 if re.match(r'register', Sets[0], re.I) != None:
 
                     if len(Sets) != 5:
-                        self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
+                        self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments (Use Help Command)\n"))
                     else:
                         Response = self.Register.Registeration(Sets[1:], self.Crypto)
                         self.Socket.sendall(self.Crypto.encrypt(Response))
@@ -89,7 +89,7 @@ class Server:
                 elif re.match(r'login', Sets[0], re.I) != None:
 
                     if len(Sets) != 3:
-                        self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
+                        self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments (Use Help Command)\n"))
                     else:
                         Response = self.Login.Login(Sets[1], Sets[2], self.Crypto, self.Loger)
                         if Response == "Logged in successfully\n":
@@ -111,7 +111,7 @@ class Server:
                             self.Crypto.encrypt("You should Login/Signin first (use Register/Login command) !!!\n"))
 
                     elif len(Sets) > 2:
-                        self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
+                        self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments (Use Help Command)\n"))
                     else:
                         arg = ""
                         if len(Sets) == 2:
@@ -126,7 +126,7 @@ class Server:
                             self.Crypto.encrypt("You should Login/Signin first (use Register/Login command) !!!\n"))
 
                     elif len(Sets) != 4:
-                        self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
+                        self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments (Use Help Command)\n"))
                     else:
                         Response = self.Upload.PutFile(Sets[1:], self.ConnectedUser, self.Loger, self.IsHoneyPot)
                         self.Socket.sendall(self.Crypto.encrypt(Response))
@@ -138,7 +138,7 @@ class Server:
                             self.Crypto.encrypt("You should Login/Signin first (use Register/Login command) !!!\n"))
 
                     elif len(Sets) != 2:
-                        self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
+                        self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments (Use Help Command)\n"))
                     else:
                         Response = self.Download.GetFile(Sets[1], self.ConnectedUser, self.UserConf, self.UserInteg, self.Loger, self.IsHoneyPot, self.Read)
                         self.Socket.sendall(self.Crypto.encrypt(Response))
@@ -150,7 +150,7 @@ class Server:
                             self.Crypto.encrypt("You should Login/Signin first (use Register/Login command) !!!\n"))
 
                     elif len(Sets) != 2:
-                        self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
+                        self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments (Use Help Command)\n"))
                     else:
                         Response = self.Read.ReadFromFile(self.ConnectedUser, Sets[1], self.UserConf, self.UserInteg,
                                                           self.Loger, self.IsHoneyPot)
@@ -167,7 +167,7 @@ class Server:
 
                         Sets3 = Sets2[0].split(" ")
                         if len(Sets3) != 3:
-                            self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
+                            self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments (Use Help Command)\n"))
                         else:
                             Response = self.Write.WriteToFile(self.ConnectedUser, Sets3[1:], self.UserConf,
                                                               self.UserInteg,
@@ -195,7 +195,7 @@ class Server:
                             self.Crypto.encrypt("You should Login/Signin first (use Register/Login command) !!!\n"))
 
                     elif len(Sets) != 4:
-                        self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
+                        self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments (Use Help Command)\n"))
                     else:
                         Response = self.Dac.GrantAccess(self.ConnectedUser, Sets[1:], self.Loger, self.IsHoneyPot)
                         self.Socket.sendall(self.Crypto.encrypt(Response))
@@ -207,7 +207,7 @@ class Server:
                             self.Crypto.encrypt("You should Login/Signin first (use Register/Login command) !!!\n"))
 
                     elif len(Sets) != 4:
-                        self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
+                        self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments (Use Help Command)\n"))
                     else:
                         Response = self.Dac.RevokeAccess(self.ConnectedUser, Sets[1:], self.Loger, self.IsHoneyPot)
                         self.Socket.sendall(self.Crypto.encrypt(Response))
@@ -215,7 +215,20 @@ class Server:
                 elif re.match(r'exit', Sets[0], re.I) != None:
                     self.IsHoneyPot = 0
                     self.ConnectedUser = ""
-                    self.Socket.sendall(self.Crypto.encrypt("Bye Bye !!!\n".encode()))
+                    self.Socket.sendall(self.Crypto.encrypt("Logged out successfully !!!\n".encode()))
+
+                elif re.match(r'help', Sets[0], re.I) != None:
+                    Response = "__________________________________________________________\nRegister <Username> <Password> <Conf_Level> <Integ_Level>\n"
+                    Response += "__________________________________________________________\nLogin <Username> <Password>\n"
+                    Response += "__________________________________________________________\nList <FileName:Optional>\n"
+                    Response += "__________________________________________________________\nPut <Filename> <Conf_Level> <Integ_Level>\n"
+                    Response += "__________________________________________________________\nGet <Filename>\n"
+                    Response += "__________________________________________________________\nRead <FileName>\n"
+                    Response += "__________________________________________________________\nWrite <FileName> <Content>\n"
+                    Response += "__________________________________________________________\nGrant <Rights:Seperated by /> <FileName> <Target_User>\n"
+                    Response += "__________________________________________________________\nRevoke <Rights:Seperated by /> <FileName> <Target_User>\n__________________________________________________________\n"
+
+                    self.Socket.sendall(self.Crypto.encrypt(Response))
 
                 else:
                     self.Socket.sendall(self.Crypto.encrypt(Sets[0] + " is not a built-in command !!!\n"))
