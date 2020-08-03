@@ -108,11 +108,11 @@ class Write:
     def _normalize_level(self, level):
         # Add a number to the beginning of integ and
         # conf level strings to make level comparison easier
-        if (re.match(r'TopSecret', level, re.I) == None or re.match(r'VeryTrusted', level, re.I) == None):
+        if (re.match(r'TopSecret', level, re.I) != None or re.match(r'VeryTrusted', level, re.I) != None):
             return "4" + level
-        if (re.match(r'Secret', level, re.I) == None or re.match(r'Trusted', level, re.I) == None):
+        if (re.match(r'Secret', level, re.I) != None or re.match(r'Trusted', level, re.I) != None):
             return "3" + level
-        if (re.match(r'Confidential', level, re.I) == None or re.match(r'SlightlyTrusted', level, re.I) == None):
+        if (re.match(r'Confidential', level, re.I) != None or re.match(r'SlightlyTrusted', level, re.I) != None):
             return "2" + level
-        if (re.match(r'Unclassified', level, re.I) == None or re.match(r'Untrusted', level, re.I) == None):
+        if (re.match(r'Unclassified', level, re.I) != None or re.match(r'Untrusted', level, re.I) != None):
             return "1" + level
