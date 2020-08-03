@@ -1,8 +1,9 @@
 import os
+import Read
 
 class Download :
 
-    def GetFile (self, FileName, Owner, logger, IsHoneyPot) :
+    def GetFile (self, FileName, Owner, user_conf, user_integ, logger, IsHoneyPot, Read) :
 
         logger.Put_Get_Audit(Owner, FileName, "Get", IsHoneyPot)
 
@@ -29,9 +30,11 @@ class Download :
         if self._CheckDiscretionaryAccess(file_acl, Owner) == -1:
             return "Permission Denied!(By discretionary access control rules)\n"
 
+        file_content = Read.ReadFromFile(Owner, FileName, user_conf, user_integ, logger, IsHoneyPot)
+
         os.remove(self.dir + FileName)
 
-        return FileName + " Removed from Server Successfully !!!\n"
+        return FileName + " Removed from Server Successfully !!!\n" + file_content
 
 
     def FileNameCheck (self, FileName) :

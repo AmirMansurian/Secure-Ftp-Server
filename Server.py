@@ -140,7 +140,7 @@ class Server:
                     elif len(Sets) != 2:
                         self.Socket.sendall(self.Crypto.encrypt("inappropriate arguments !!!\n"))
                     else:
-                        Response = self.Download.GetFile(Sets[1], self.ConnectedUser, self.Loger, self.IsHoneyPot)
+                        Response = self.Download.GetFile(Sets[1], self.ConnectedUser, self.UserConf, self.UserInteg, self.Loger, self.IsHoneyPot, self.Read)
                         self.Socket.sendall(self.Crypto.encrypt(Response))
 
                 elif re.match(r'read', Sets[0], re.I) != None:

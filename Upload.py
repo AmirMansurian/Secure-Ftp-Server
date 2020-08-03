@@ -35,7 +35,7 @@ class Upload :
             return "You can not Put Files With Integrity level more than Your's !!!\n"
 
         File = open(self.dir + FileName, "w+")
-        File.write(Owner + " " + ConfLevel + " " + IntegLevel + "\n")
+        File.write(Owner + " " + ConfLevel + " " + IntegLevel + "\n\n")
         File.close()
 
         return FileName + " was successfully uploaded !!!\n"

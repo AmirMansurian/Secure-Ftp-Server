@@ -1,7 +1,7 @@
 from Socket import ClientSocket
 from SessionKeyExchange import ClientSession
 from Cryptography import session_crypto
-
+import re
 
 KEY_THRESHOLD = 2
 
@@ -27,10 +27,21 @@ def __main__():
         sock.send(enc_command)
 
         response = crypto_system.decrypt(sock.recv(4096))
-        print(response)
 
+        if re.match(r'get', command.split(' ')[0], re.I) != None:
+            msg, content = response.split('\n',1)
+            if msg == command.split(' ')[1] + " Removed from Server Successfully !!!":
+                file = open(command.split(' ')[1], 'w')
+                file.writelines(content)
+                file.close()
+                print('File downloaded successfully')
+            else:
+                print(response)
+        else:
+            print(response)
+        
         # Increase session key lifetime and generate
-        # a new one if needed at the end of this loop 
+        # a new one if needed at the end of this loop
         fresh_key += 1
         if (fresh_key > KEY_THRESHOLD):
             fresh_key = 0
