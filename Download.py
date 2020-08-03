@@ -20,13 +20,14 @@ class Download :
         if self.FileNameCheck(FileName) == -1:
            return "File Not Found !!!\n"
 
-        if self.OwnerCheck(Owner, FileName) == -1 and self._CheckDiscretionaryAccess(file_acl, Owner) == -1:
-           return "Permission Denied !!!\n"
-
         file = open(self.dir + FileName, "r")
         file_acl = file.readline()
         file_acl = file.readline()
         file.close()
+
+        if self.OwnerCheck(Owner, FileName) == -1 and self._CheckDiscretionaryAccess(file_acl, Owner) == -1:
+           return "Permission Denied !!!\n"
+
         if self._CheckDiscretionaryAccess(file_acl, Owner) == -1:
             return "Permission Denied!(By discretionary access control rules)\n"
 
