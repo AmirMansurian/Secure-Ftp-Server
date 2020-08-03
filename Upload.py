@@ -31,8 +31,9 @@ class Upload :
         if re.match(r'VeryTrusted', IntegLevel, re.I) == None and re.match(r'Trusted', IntegLevel,re.I) == None and re.match(r'SlightlyTrusted',IntegLevel,re.I) == None and re.match(r'Untrusted', IntegLevel, re.I) == None:
                 return "Integrity level is not Valid !!!\n"
 
-        if self.IntegCheck(Owner, ConfLevel, IntegLevel) == -1 :
-            return "You can not Put File With Integrity/Confidentiality level more/Less than Your's!!!\n"
+
+        if self.LevelCheck(Owner, ConfLevel, IntegLevel) == -1 :
+            return "You can not Put Files With different Integrity and Confidentiality level than Your's !!!\n"
 
         File = open(self.dir + FileName, "w+")
         File.write(Owner + " " + ConfLevel + " " + IntegLevel + "\n\n")
@@ -51,7 +52,7 @@ class Upload :
                 return -1
         return 1
 
-    def IntegCheck(self, Owner, ConfLevel, IntegLevel):
+    def LevelCheck(self, Owner, ConfLevel, IntegLevel):
 
         File = open("Users.txt", "r")
         Line = File.readlines()
@@ -59,7 +60,7 @@ class Upload :
         for line in Line :
             set = line.split(";")
             if set[0] == Owner :
-                if (self._normalize_level(set[2])[0] >= self._normalize_level(IntegLevel)[0]) and  (self._normalize_level(set[1])[0] <= self._normalize_level(ConfLevel)[0]):
+                if (self._normalize_level(set[2])[0] == self._normalize_level(IntegLevel)[0]) and  (self._normalize_level(set[1])[0] == self._normalize_level(ConfLevel)[0]):
                     return 1
                 else :
                     return -1
