@@ -17,10 +17,10 @@ class Download :
         if '\\' in FileName or '/' in FileName:
             return "Invalid file name\n"
 
-        if self.FileNameCheck(FileName) == -1 :
+        if self.FileNameCheck(FileName) == -1:
            return "File Not Found !!!\n"
 
-        if self.OwnerCheck(Owner, FileName) == -1 :
+        if self.OwnerCheck(Owner, FileName) == -1 and self._CheckDiscretionaryAccess(file_acl, Owner) == -1:
            return "Permission Denied !!!\n"
 
         file = open(self.dir + FileName, "r")
