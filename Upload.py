@@ -31,7 +31,7 @@ class Upload :
         if re.match(r'VeryTrusted', IntegLevel, re.I) == None and re.match(r'Trusted', IntegLevel,re.I) == None and re.match(r'SlightlyTrusted',IntegLevel,re.I) == None and re.match(r'Untrusted', IntegLevel, re.I) == None:
                 return "Integrity level is not Valid !!!\n"
 
-        if self.IntegCheck(Owner, IntegLevel) == -1 :
+        if self.IntegCheck(Owner, ConfLevel, IntegLevel) == -1 :
             return "You can not Put Files With Integrity level more than Your's !!!\n"
 
         File = open(self.dir + FileName, "w+")
@@ -51,7 +51,7 @@ class Upload :
                 return -1
         return 1
 
-    def IntegCheck(self, Owner, IntegLevel):
+    def IntegCheck(self, Owner, ConfLevel, IntegLevel):
 
         File = open("Users.txt", "r")
         Line = File.readlines()
@@ -59,7 +59,7 @@ class Upload :
         for line in Line :
             set = line.split(";")
             if set[0] == Owner :
-                if self._normalize_level(set[2]) >= self._normalize_level(IntegLevel) :
+                if (self._normalize_level(set[2])[0] >= self._normalize_level(IntegLevel)[0]) and  (self._normalize_level(set[1])[0] <= self._normalize_level(ConfLevel)[0]):
                     return 1
                 else :
                     return -1
@@ -71,10 +71,10 @@ class Upload :
         # Add a number to the beginning of integ and
         # conf level strings to make level comparison easier
         if (re.match(r'TopSecret', level, re.I) == None or re.match(r'VeryTrusted', level, re.I) == None):
-                return "4"
+                return "4" + level
         if (re.match(r'Secret', level, re.I) == None or re.match(r'Trusted', level, re.I) == None):
-                return "3"
+                return "3" + level
         if (re.match(r'Confidential', level, re.I) == None or re.match(r'SlightlyTrusted', level, re.I) == None):
-                return "2"
+                return "2" + level
         if (re.match(r'Unclassified', level, re.I) == None or re.match(r'Untrusted', level, re.I) == None):
-                return "1"
+                return "1" + level

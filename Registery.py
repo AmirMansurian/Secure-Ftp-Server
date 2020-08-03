@@ -70,8 +70,23 @@ class Registery:
         if re.match(r'(.*)' + UsernamePattern, Password, re.I) :
             IsValid = -1
 
-        if not re.match(r'[A-Za-z0-9@#$%^&+=]{8,}', Password):
+        if len(Password) < 8:
             IsValid = -1
 
-        return IsValid
+        elif not re.search("[a-z]", Password):
+            IsValid = -1
 
+        elif not re.search("[A-Z]", Password):
+            IsValid = -1
+
+        elif not re.search("[0-9]", Password):
+            IsValid = -1
+
+        elif not re.search("[_@$]", Password):
+            IsValid = -1
+
+        elif re.search("\s", Password):
+            IsValid = -1
+
+
+        return IsValid
