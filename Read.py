@@ -95,7 +95,7 @@ class Read:
         file_conf = self._normalize_level(file_conf)
         file_integ = self._normalize_level(file_integ)
 
-        if (user_conf >= file_conf and user_integ <= file_integ):
+        if (user_conf[0] >= file_conf[0] and user_integ[0] <= file_integ[0]):
             return 1
         else:
             return -1
