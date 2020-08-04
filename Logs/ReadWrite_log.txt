@@ -14,3 +14,10 @@
 2020-08-03 08:10:48.139337;read;ali;TopSecret;VeryTrusted;amir.txt;topsecret;verytrusted;rwg
 2020-08-03 08:10:55.107708;read;ali;TopSecret;VeryTrusted;test2.txt;TopSecret;VeryTrusted;No DAC
 2020-08-03 08:58:04.180594;read;amir1;secret;trusted;test.txt;TopSecret;VeryTrusted;No DAC
+2020-08-03 21:35:34.093720;read;test;confidential;trusted;testfile.txt;no such file;
+2020-08-03 21:35:42.210116;read;test;confidential;trusted;filetest.txt;confidential;trusted;No DAC
+2020-08-03 21:35:55.461295;write;test;confidential;trusted;filetest.txt;confidential;trusted;No DAC
+2020-08-03 21:36:01.308536;read;test;confidential;trusted;filetest.txt;confidential;trusted;No DAC
+2020-08-03 21:43:08.369390;write;test2;topsecret;untrusted;filetest.txt;confidential;trusted;No DAC
+2020-08-03 21:43:22.296964;read;test2;topsecret;untrusted;filetest.txt;confidential;trusted;No DAC
+2020-08-03 21:44:02.514759;read;test;confidential;trusted;filetest.txt;confidential;trusted;No DAC

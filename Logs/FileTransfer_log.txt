@@ -139,3 +139,5 @@
 2020-08-03 09:10:08.181774;amir1;tried to;Put;text3.txt;
 2020-08-03 09:10:49.149432;amir1;tried to;Put;test3.txt;
 2020-08-03 09:11:28.660462;amir1;tried to;Put;test3.txt;
+2020-08-03 21:35:19.712826;test;tried to;Put;filetest.txt;
+2020-08-03 21:44:02.512760;test;tried to;Get;filetest.txt;

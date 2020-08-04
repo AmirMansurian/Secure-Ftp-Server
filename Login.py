@@ -1,5 +1,6 @@
 import datetime
 import base64
+import re
 
 #client sent this command to server : Login "Username" "Password" . we decrypt this message and send "Username","password" and socket 
 #and crypto module to the ServerLogin class. 
@@ -102,3 +103,29 @@ class serverLogin:
 
         successLogin = 0  ## some thing was wrong
         return successLogin, ""
+
+    def PassCheck(self, Password):
+
+        IsValid = 1
+
+
+        if len(Password) < 8:
+            IsValid = -1
+
+        elif not re.search("[a-z]", Password):
+            IsValid = -1
+
+        elif not re.search("[A-Z]", Password):
+            IsValid = -1
+
+        elif not re.search("[0-9]", Password):
+            IsValid = -1
+
+        elif not re.search("[_@$]", Password):
+            IsValid = -1
+
+        elif re.search("\s", Password):
+            IsValid = -1
+
+
+        return IsValid
